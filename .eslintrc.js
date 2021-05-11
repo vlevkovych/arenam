@@ -38,7 +38,16 @@ module.exports = {
     rules: {
         '@typescript-eslint/indent': [
             'error',
-            2,
+            4,
+        ],
+        '@typescript-eslint/object-curly-spacing': [
+            'off',
+        ],
+        '@typescript-eslint/explicit-function-return-type': [
+            'off',
+        ],
+        '@typescript-eslint/no-floating-promises': [
+            'off',
         ],
         '@typescript-eslint/no-magic-numbers': [
             'off',
@@ -132,6 +141,13 @@ module.exports = {
         ],
         'no-ternary': [
             'off',
+        ],
+        'func-style': [
+            'off',
+        ],
+        'object-curly-spacing': [
+            'error',
+            'always',
         ],
         'node/no-missing-import': [
             'error',

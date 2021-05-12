@@ -5,7 +5,6 @@
     "private": true,
     "license": "UNLICENSED",
     "engineStrict": true,
-    "type": "module",
     "engines": {
         "node": "^14"
     },

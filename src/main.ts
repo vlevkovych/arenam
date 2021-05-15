@@ -1,11 +1,9 @@
 import { NestFactory } from '@nestjs/core';
-import {
-    FastifyAdapter,
-    NestFastifyApplication,
-} from '@nestjs/platform-fastify';
+import type { NestFastifyApplication } from '@nestjs/platform-fastify';
+import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
     const app = await NestFactory.create<NestFastifyApplication>(
         AppModule,
         new FastifyAdapter(),
@@ -13,4 +11,5 @@ async function bootstrap() {
     await app.listen(3000);
 }
 
+// eslint-disable-next-line
 bootstrap();

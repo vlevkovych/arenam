@@ -49,6 +49,14 @@
             {
                 "tryExtensions": [".js", ".ts", ".json", ".node"]
             }
-        ]
+        ],
+        "node/no-unsupported-features/es-syntax": [
+            "error",
+            {
+                "ignores": ["modules"]
+            }
+        ],
+        "new-cap": "off",
+        "func-style": "off"
     }
 }

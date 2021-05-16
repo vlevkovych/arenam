@@ -49,6 +49,14 @@
             {
                 "tryExtensions": [".js", ".ts", ".json", ".node"]
             }
+        ],
+        "node/no-unsupported-features/es-syntax": "off",
+        "new-cap": "off",
+        "@typescript-eslint/no-extraneous-class": [
+            "error",
+            {
+                "allowWithDecorator": true
+            }
         ]
     }
 }

@@ -15,12 +15,15 @@
         "start:dev": "nest start --watch",
         "start:debug": "nest start --debug --watch",
         "start:prod": "node dist/main",
+        "format": "prettier --write \"src/**/*.ts\"",
+        "format:check": "prettier --check \"src/**/*.ts\"",
         "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
         "test": "eslint \"{src,apps,libs,test}/**/*.ts\" && jest --config test/jest-config.json --passWithNoTests",
         "test:watch": "jest --config test/jest-config.json --watch",
         "test:cov": "jest --config test/jest-config.json --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-        "test:e2e": "jest --config ./test/jest-e2e.json"
+        "test:e2e": "jest --config ./test/jest-e2e.json",
+        "prepare": "husky install"
     },
     "dependencies": {
         "@nestjs/common": "^7.6.15",
@@ -46,6 +49,7 @@
         "eslint-plugin-node": "^11.1.0",
         "eslint-plugin-prettier": "^3.4.0",
         "eslint-plugin-promise": "^4.3.1",
+        "husky": "^6.0.0",
         "jest": "^26.6.3",
         "prettier": "^2.3.0",
         "supertest": "^6.1.3",

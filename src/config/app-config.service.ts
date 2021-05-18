@@ -4,7 +4,7 @@ import type { EnvType } from './env.type';
 
 @Injectable()
 export class AppConfigService {
-    public constructor(private configService: ConfigService) {}
+    public constructor(private readonly configService: ConfigService) {}
 
     public get<T extends keyof EnvType>(envVariable: T): T {
         const value = this.configService.get<T>(envVariable);

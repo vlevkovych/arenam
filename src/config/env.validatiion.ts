@@ -11,7 +11,7 @@ class EnvironmentVariables implements EnvType {
 }
 
 export const validate = (
-    config: Record<string, unknown>,
+    config: Readonly<Record<string, unknown>>,
 ): EnvironmentVariables => {
     const validatedConfig = plainToClass(EnvironmentVariables, config, {
         enableImplicitConversion: true,

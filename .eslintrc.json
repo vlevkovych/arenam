@@ -68,11 +68,15 @@
         "@typescript-eslint/no-parameter-properties": [
             "error",
             {
-                "allows": ["private"]
+                "allows": ["private", "private readonly"]
             }
         ],
-        "@typescript-eslint/prefer-readonly": ["off"],
-        "@typescript-eslint/prefer-readonly-parameter-types": ["off"],
+        "@typescript-eslint/prefer-readonly-parameter-types": [
+            "error",
+            {
+                "checkParameterProperties": false
+            }
+        ],
         "one-var": ["off"]
     }
 }

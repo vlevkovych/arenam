@@ -1,4 +1,9 @@
+export enum EnvironmentVariables {
+    port = 'APP_PORT',
+    host = 'APP_HOST',
+}
+
 export interface EnvType {
-    APP_PORT: number;
-    APP_HOST: string;
+    [EnvironmentVariables.port]: number;
+    [EnvironmentVariables.host]: string;
 }

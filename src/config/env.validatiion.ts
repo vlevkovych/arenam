@@ -1,6 +1,7 @@
 import * as Joi from 'joi';
+import { EnvironmentVariables } from './env.type';
 
 export const validationSchema = Joi.object({
-    APP_HOST: Joi.string().default(3000),
-    APP_PORT: Joi.number().default('localhost'),
+    [EnvironmentVariables.port]: Joi.number().default(3000),
+    [EnvironmentVariables.host]: Joi.string().default('localhost'),
 });

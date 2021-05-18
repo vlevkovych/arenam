@@ -4,6 +4,7 @@ import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import type { AppConfigService } from './config/app-config.service';
+import { EnvironmentVariables } from './config/env.type';
 
 const bootstrap: () => Promise<void> = async () => {
     const app = await NestFactory.create<NestFastifyApplication>(
@@ -12,8 +13,8 @@ const bootstrap: () => Promise<void> = async () => {
     );
     const appConfigService: AppConfigService = app.get('AppConfigService');
     await app.listen(
-        appConfigService.get('APP_PORT'),
-        appConfigService.get('APP_HOST'),
+        appConfigService.get(EnvironmentVariables.port),
+        appConfigService.get(EnvironmentVariables.host),
     );
 };
 

@@ -1,27 +1,6 @@
-import { plainToClass } from 'class-transformer';
-import { IsNumber, IsString, validateSync } from 'class-validator';
-import type { EnvType } from './env.type';
+import * as Joi from 'joi';
 
-class EnvironmentVariables implements EnvType {
-    @IsNumber()
-    public APP_PORT!: number;
-
-    @IsString()
-    public APP_HOST!: string;
-}
-
-export const validate = (
-    config: Readonly<Record<string, unknown>>,
-): EnvironmentVariables => {
-    const validatedConfig = plainToClass(EnvironmentVariables, config, {
-        enableImplicitConversion: true,
-    });
-    const errors = validateSync(validatedConfig, {
-        skipMissingProperties: false,
-    });
-
-    if (errors.length > 0) {
-        throw new Error(errors.toString());
-    }
-    return validatedConfig;
-};
+export const validationSchema = Joi.object({
+    APP_HOST: Joi.string().default(3000),
+    APP_PORT: Joi.number().default('localhost'),
+});

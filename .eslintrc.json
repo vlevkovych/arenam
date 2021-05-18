@@ -72,6 +72,7 @@
             }
         ],
         "@typescript-eslint/prefer-readonly": ["off"],
-        "@typescript-eslint/prefer-readonly-parameter-types": ["off"]
+        "@typescript-eslint/prefer-readonly-parameter-types": ["off"],
+        "one-var": ["off"]
     }
 }

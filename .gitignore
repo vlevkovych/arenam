@@ -1,7 +1,6 @@
 # compiled output
 /dist
 /node_modules
-/.husky/_
 # Logs
 logs
 *.log
@@ -32,3 +31,7 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# App
+/.husky/_
+.env

@@ -1,15 +1,17 @@
+import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
-import { Logger } from '@nestjs/common';
+import type { AppConfigService } from './config/config.service';
 
 const bootstrap: () => Promise<void> = async () => {
     const app = await NestFactory.create<NestFastifyApplication>(
-        AppModule,
-        new FastifyAdapter(),
-    );
-    await app.listen(3000);
+            AppModule,
+            new FastifyAdapter(),
+        ),
+        appConfigService: AppConfigService = app.get('AppConfigService');
+    await app.listen(appConfigService.port, appConfigService.host);
 };
 
 bootstrap().catch((error: Readonly<Error>) => {

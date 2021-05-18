@@ -57,6 +57,21 @@
             {
                 "allowWithDecorator": true
             }
-        ]
+        ],
+        "@typescript-eslint/naming-convention": [
+            "error",
+            {
+                "selector": "variable",
+                "format": ["camelCase", "UPPER_CASE"]
+            }
+        ],
+        "@typescript-eslint/no-parameter-properties": [
+            "error",
+            {
+                "allows": ["private"]
+            }
+        ],
+        "@typescript-eslint/prefer-readonly": ["off"],
+        "@typescript-eslint/prefer-readonly-parameter-types": ["off"]
     }
 }

@@ -3,8 +3,8 @@ import { NestFactory } from '@nestjs/core';
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
-import type { AppConfigService } from './config/app-config.service';
-import { EnvironmentVariables } from './config/env.type';
+import type { AppConfigService } from './config/app/app-config.service';
+import { EnvironmentVariables } from './config/app/env.type';
 
 const bootstrap: () => Promise<void> = async () => {
     const app = await NestFactory.create<NestFastifyApplication>(

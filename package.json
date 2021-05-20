@@ -27,10 +27,15 @@
         "prepare": "husky install"
     },
     "dependencies": {
+        "@apollo/gateway": "^0.26.3",
         "@nestjs/common": "^7.6.15",
         "@nestjs/config": "^0.6.3",
         "@nestjs/core": "^7.6.15",
+        "@nestjs/graphql": "^7.10.6",
         "@nestjs/platform-fastify": "^7.6.15",
+        "apollo-server-fastify": "^2.24.0",
+        "graphql": "^15.5.0",
+        "graphql-tools": "^7.0.5",
         "joi": "^17.4.0",
         "reflect-metadata": "^0.1.13",
         "rimraf": "^3.0.2",

@@ -71,12 +71,7 @@
                 "allows": ["private", "private readonly"]
             }
         ],
-        "@typescript-eslint/prefer-readonly-parameter-types": [
-            "error",
-            {
-                "checkParameterProperties": false
-            }
-        ],
+        "@typescript-eslint/prefer-readonly-parameter-types": ["off"],
         "one-var": ["off"]
     }
 }

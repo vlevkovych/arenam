@@ -36,7 +36,7 @@ export class UserService {
         try {
             await signupInputValidationSchema.validateAsync(signupInput);
         } catch (error: unknown) {
-            throw new BadRequestException(error)
+            throw new BadRequestException(error);
         }
 
         const hashPassword = await bcrypt.hash(signupInput.password, 10);

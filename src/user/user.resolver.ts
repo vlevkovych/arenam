@@ -1,5 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { SignupInput } from './dto/signup.input';
 import { User } from './user.models';
 import { UserService } from './user.service';
@@ -15,12 +14,10 @@ export class UserResolver {
         return this.userService.createUser(signupInput);
     }
 
-    @Query(() => User)
-    public async getUser(@Args('id') id: number): Promise<User | null> {
-        const user = await this.userService.getUser(id);
-        if (!user) {
-            throw new NotFoundException();
-        }
-        return user;
+    @Query(() => User, { nullable: true })
+    public async getUser(
+        @Args('id', { type: () => Int }) id: number,
+    ): Promise<User> {
+        return this.userService.getUser(id);
     }
 }

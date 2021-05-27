@@ -4,6 +4,7 @@ import { EnvironmentVariables } from '../config/app/env.type';
 import { PrismaModule } from '../config/prisma/prisma.module';
 import { AuthResolver } from './auth.resolver';
 import { AuthService } from './auth.service';
+import { GqlAuthGuard } from './guards/gql-auth.guard';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
@@ -13,6 +14,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
             secret: EnvironmentVariables.jwtSecret,
         }),
     ],
-    providers: [AuthService, AuthResolver, JwtStrategy],
+    providers: [AuthService, AuthResolver, JwtStrategy, GqlAuthGuard],
 })
 export class AuthModule {}

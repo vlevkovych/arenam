@@ -72,6 +72,7 @@
             }
         ],
         "@typescript-eslint/prefer-readonly-parameter-types": ["off"],
-        "one-var": ["off"]
+        "one-var": ["off"],
+        "class-methods-use-this": ["off"]
     }
 }

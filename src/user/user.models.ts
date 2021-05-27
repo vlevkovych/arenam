@@ -13,7 +13,4 @@ export class User {
 
     @Field(() => String)
     public emailAddress!: string;
-
-    @Field(() => String)
-    public password!: string;
 }

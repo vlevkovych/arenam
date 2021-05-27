@@ -4,6 +4,8 @@ export enum EnvironmentVariables {
     dbUsername = 'DB_USERNAME',
     dbPassword = 'DB_PASSWORD',
     dbDatabaseName = 'DB_DATABASE_NAME',
+    dbUrl = 'DB_URL',
+    jwtSecret = 'JWT_SECRET',
 }
 
 export interface EnvType {
@@ -12,4 +14,6 @@ export interface EnvType {
     [EnvironmentVariables.dbUsername]: string;
     [EnvironmentVariables.dbPassword]: string;
     [EnvironmentVariables.dbDatabaseName]: string;
+    [EnvironmentVariables.dbUrl]: string;
+    [EnvironmentVariables.jwtSecret]: string;
 }

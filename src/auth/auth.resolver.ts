@@ -6,6 +6,7 @@ import { SignupInput } from './dto/signup.input';
 @Resolver()
 export class AuthResolver {
     public constructor(private readonly authService: AuthService) {}
+
     @Mutation(() => String)
     public async login(
         @Args('loginInput') loginInput: LoginInput,

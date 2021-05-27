@@ -1,13 +1,26 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import type { User } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../config/prisma/prisma.service';
+import type { JwtDto } from './dto/jwt.dto';
 import type { LoginInput } from './dto/login.input';
 import type { SignupInput } from './dto/signup.input';
-import * as bcrypt from 'bcrypt';
 import { signupInputValidationSchema } from './validation/signup.input.validation';
 
 @Injectable()
 export class AuthService {
-    public constructor(private readonly prisma: PrismaService) {}
+    public constructor(
+        private readonly prisma: PrismaService,
+        private readonly jwt: JwtService,
+    ) {}
+
+    private static async validate(
+        password: string,
+        hashedPassword: string,
+    ): Promise<boolean> {
+        return bcrypt.compare(password, hashedPassword);
+    }
 
     public async login(loginInput: LoginInput): Promise<string> {
         const foundUser = await this.prisma.user.findUnique({
@@ -16,14 +29,14 @@ export class AuthService {
         if (!foundUser) {
             throw new BadRequestException('Wrong email or password');
         }
-        const passwordValid = await this.validate(
+        const passwordValid = await AuthService.validate(
             loginInput.password,
             foundUser.password,
         );
         if (!passwordValid) {
             throw new BadRequestException('Wrong email or password');
         }
-        return 'You are logged in';
+        return `You are logged in, your token: ${this.signToken(foundUser.id)}`;
     }
 
     public async register(signupInput: SignupInput): Promise<string> {
@@ -50,10 +63,12 @@ export class AuthService {
         return 'Signup Successful';
     }
 
-    private async validate(
-        password: string,
-        hashedPassword: string,
-    ): Promise<boolean> {
-        return bcrypt.compare(password, hashedPassword);
+    public async validateUser(userId: number): Promise<User | null> {
+        return this.prisma.user.findFirst({ where: { id: userId } });
+    }
+
+    private signToken(id: number): string {
+        const payload: JwtDto = { userId: id };
+        return this.jwt.sign(payload);
     }
 }

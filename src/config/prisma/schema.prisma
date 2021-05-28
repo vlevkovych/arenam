@@ -11,9 +11,37 @@ generator client {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  name         String    @db.VarChar
-  signupDate   DateTime  @default(now()) @db.Timestamp(6)
-  emailAddress String    @unique @db.VarChar
-  password     String    @db.VarChar
+  id           Int          @id @default(autoincrement())
+  name         String       @db.VarChar
+  signupDate   DateTime     @default(now()) @db.Timestamp(6)
+  emailAddress String       @unique @db.VarChar
+  password     String       @db.VarChar
+  Post         Post[]
+  PostRating   PostRating[]
+}
+
+model Post {
+  id         Int          @id @default(autoincrement())
+  title      String       @db.VarChar
+  body       String       @db.VarChar
+  creator    Int
+  rating     Int
+  createdAt  DateTime     @default(now()) @db.Timestamp(6)
+  User       User         @relation(fields: [creator], references: [id])
+  PostRating PostRating[]
+}
+
+model PostRating {
+  id     Int          @id @default(autoincrement())
+  userId Int
+  postId Int
+  rating RatingStatus
+  user   User         @relation(fields: [userId], references: [id])
+  post   Post         @relation(fields: [postId], references: [id])
+}
+
+enum RatingStatus {
+  neutral
+  upvoted
+  downvoted
 }

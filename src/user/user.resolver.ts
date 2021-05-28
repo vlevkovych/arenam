@@ -1,4 +1,7 @@
+import { UseGuards } from '@nestjs/common';
 import { Args, Int, Query, Resolver } from '@nestjs/graphql';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { User } from './user.models';
 import { UserService } from './user.service';
 
@@ -11,5 +14,11 @@ export class UserResolver {
         @Args('id', { type: () => Int }) id: number,
     ): Promise<User> {
         return this.userService.getUser(id);
+    }
+
+    @Query(() => User)
+    @UseGuards(GqlAuthGuard)
+    public getMyProfile(@CurrentUser() user: User): User {
+        return user;
     }
 }

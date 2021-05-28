@@ -62,7 +62,7 @@
             "error",
             {
                 "selector": "variable",
-                "format": ["camelCase", "UPPER_CASE"]
+                "format": ["camelCase", "PascalCase", "UPPER_CASE"]
             }
         ],
         "@typescript-eslint/no-parameter-properties": [
@@ -72,6 +72,7 @@
             }
         ],
         "@typescript-eslint/prefer-readonly-parameter-types": ["off"],
-        "one-var": ["off"]
+        "one-var": ["off"],
+        "class-methods-use-this": ["off"]
     }
 }

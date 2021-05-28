@@ -25,7 +25,7 @@ model Post {
   title      String       @db.VarChar
   body       String       @db.VarChar
   creator    Int
-  rating     Int
+  rating     Int          @default(0)
   createdAt  DateTime     @default(now()) @db.Timestamp(6)
   User       User         @relation(fields: [creator], references: [id])
   PostRating PostRating[]

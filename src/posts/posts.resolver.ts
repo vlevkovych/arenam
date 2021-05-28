@@ -18,4 +18,13 @@ export class PostsResolver {
     ): Promise<string> {
         return this.postsService.createPost(input, creator);
     }
+
+    @Mutation(() => String)
+    @UseGuards(GqlAuthGuard)
+    public async deletePost(
+        @Args('postId') postId: number,
+        @CurrentUser() creator: User,
+    ): Promise<string> {
+        return this.postsService.deletePost(postId, creator);
+    }
 }

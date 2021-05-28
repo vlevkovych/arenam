@@ -20,4 +20,18 @@ export class PostsService {
         });
         return 'Post successfully created';
     }
+
+    public async deletePost(postId: number, creator: User): Promise<string> {
+        const post = await this.prisma.post.findFirst({
+            where: {
+                creator: creator.id,
+                id: postId,
+            },
+        });
+        if (post) {
+            await this.prisma.post.delete({ where: { id: post.id } });
+            return 'Post successfully deleted';
+        }
+        return 'Post does not exist or you are not the author';
+    }
 }

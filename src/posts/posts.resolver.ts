@@ -13,6 +13,7 @@ import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { User } from '../user/user.models';
 import { UserService } from '../user/user.service';
 import { CreatePostInput } from './dto/create-post.input';
+import { UpdatePostInput } from './dto/update-post.input';
 import { Post } from './posts.models';
 import { PostsService } from './posts.service';
 
@@ -39,9 +40,21 @@ export class PostsResolver {
     @UseGuards(GqlAuthGuard)
     public async createPost(
         @Args('input') input: CreatePostInput,
-        @CurrentUser() creator: User,
+        @CurrentUser() user: User,
     ): Promise<string> {
-        return this.postsService.createPost(input, creator);
+        const userId = user.id;
+        return this.postsService.createPost(input, userId);
+    }
+
+    @Mutation(() => String)
+    @UseGuards(GqlAuthGuard)
+    public async updatePost(
+        @Args('id', { type: () => Int }) id: number,
+        @Args('input') input: UpdatePostInput,
+        @CurrentUser() user: User,
+    ): Promise<string> {
+        const userId = user.id;
+        return this.postsService.updatePost(id, input, userId);
     }
 
     @Mutation(() => String)

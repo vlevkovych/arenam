@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import type { User } from '@prisma/client';
 import { PrismaService } from '../config/prisma/prisma.service';
 import type { CreatePostInput } from './dto/create-post.input';
+import type { UpdatePostInput } from './dto/update-post.input';
 import type { Post } from './posts.models';
 
 @Injectable()
@@ -18,16 +18,38 @@ export class PostsService {
 
     public async createPost(
         input: CreatePostInput,
-        creator: User,
+        creatorId: number,
     ): Promise<string> {
         await this.prisma.post.create({
             data: {
-                body: input.body,
-                creatorId: creator.id,
-                title: input.title,
+                ...input,
+                creatorId,
             },
         });
         return 'Post successfully created';
+    }
+
+    public async updatePost(
+        postId: number,
+        input: UpdatePostInput,
+        creatorId: number,
+    ): Promise<string> {
+        const post = await this.prisma.post.findFirst({
+            where: {
+                creatorId,
+                id: postId,
+            },
+        });
+        if (!post) {
+            return 'Post does not exist or you are not the author ';
+        }
+        await this.prisma.post.update({
+            data: input,
+            where: {
+                id: postId,
+            },
+        });
+        return 'Post successfully updated';
     }
 
     public async deletePost(postId: number, userId: number): Promise<string> {
@@ -37,11 +59,11 @@ export class PostsService {
                 id: postId,
             },
         });
-        if (post) {
-            await this.prisma.post.delete({ where: { id: post.id } });
-            return 'Post successfully deleted';
+        if (!post) {
+            return 'Post does not exist or you are not the author';
         }
-        return 'Post does not exist or you are not the author';
+        await this.prisma.post.delete({ where: { id: post.id } });
+        return 'Post successfully deleted';
     }
 
     public async getPostsByUserId(id: number): Promise<Post[]> {

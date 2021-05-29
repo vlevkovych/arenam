@@ -12,15 +12,18 @@ export class Post {
     @Field(() => String)
     public body!: string;
 
+    @Field(() => User)
+    public creator?: User;
+
     @Field(() => Int)
     public rating!: number;
-
-    @Field(() => String, { nullable: true })
-    public myRatingStatus?: string | null;
 
     @Field()
     public createdAt!: Date;
 
-    @Field(() => User)
-    public creator!: User;
+    @Field(() => String, { nullable: true })
+    public myRatingStatus?: string | null;
+
+    @Field(() => Int)
+    public creatorId!: number;
 }

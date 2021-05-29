@@ -1,11 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import type { User } from '@prisma/client';
 import { PrismaService } from '../config/prisma/prisma.service';
 import type { CreatePostInput } from './dto/create-post.input';
+import type { Post } from './posts.models';
 
 @Injectable()
 export class PostsService {
     public constructor(private readonly prisma: PrismaService) {}
+
+    public async getPost(id: number): Promise<Post> {
+        const post = await this.prisma.post.findFirst({ where: { id } });
+        if (!post) {
+            throw new NotFoundException('Post not found');
+        }
+        return post;
+    }
 
     public async createPost(
         input: CreatePostInput,
@@ -14,7 +23,7 @@ export class PostsService {
         await this.prisma.post.create({
             data: {
                 body: input.body,
-                creator: creator.id,
+                creatorId: creator.id,
                 title: input.title,
             },
         });
@@ -24,7 +33,7 @@ export class PostsService {
     public async deletePost(postId: number, creator: User): Promise<string> {
         const post = await this.prisma.post.findFirst({
             where: {
-                creator: creator.id,
+                creatorId: creator.id,
                 id: postId,
             },
         });
@@ -33,5 +42,15 @@ export class PostsService {
             return 'Post successfully deleted';
         }
         return 'Post does not exist or you are not the author';
+    }
+
+    public async getUserPosts(id: number): Promise<Post[]> {
+        const posts = await this.prisma.post.findMany({
+            where: { creatorId: id },
+        });
+        if (posts.length === 0) {
+            return [];
+        }
+        return posts;
     }
 }

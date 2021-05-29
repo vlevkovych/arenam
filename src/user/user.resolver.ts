@@ -1,13 +1,25 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Int, Query, Resolver } from '@nestjs/graphql';
+import {
+    Args,
+    Int,
+    Parent,
+    Query,
+    ResolveField,
+    Resolver,
+} from '@nestjs/graphql';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
+import { Post } from '../posts/posts.models';
+import { PostsService } from '../posts/posts.service';
 import { User } from './user.models';
 import { UserService } from './user.service';
 
 @Resolver(() => User)
 export class UserResolver {
-    public constructor(private readonly userService: UserService) {}
+    public constructor(
+        private readonly userService: UserService,
+        private readonly postsService: PostsService,
+    ) {}
 
     @Query(() => User, { nullable: true })
     public async getUser(
@@ -18,7 +30,12 @@ export class UserResolver {
 
     @Query(() => User)
     @UseGuards(GqlAuthGuard)
-    public getMyProfile(@CurrentUser() user: User): User {
-        return user;
+    public async getMyProfile(@CurrentUser() user: User): Promise<User> {
+        return this.userService.getUser(user.id);
+    }
+
+    @ResolveField('posts', () => [Post])
+    public async getUserPosts(@Parent() user: User): Promise<Post[]> {
+        return this.postsService.getUserPosts(user.id);
     }
 }

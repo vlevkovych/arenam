@@ -1,14 +1,31 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { User } from '@prisma/client';
+import {
+    Args,
+    Mutation,
+    Parent,
+    Query,
+    ResolveField,
+    Resolver,
+} from '@nestjs/graphql';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
+import { User } from '../user/user.models';
+import { UserService } from '../user/user.service';
 import { CreatePostInput } from './dto/create-post.input';
+import { Post } from './posts.models';
 import { PostsService } from './posts.service';
 
-@Resolver()
+@Resolver(() => Post)
 export class PostsResolver {
-    public constructor(private readonly postsService: PostsService) {}
+    public constructor(
+        private readonly postsService: PostsService,
+        private readonly userService: UserService,
+    ) {}
+
+    @Query(() => Post)
+    public async getPost(@Args('id') id: number): Promise<Post> {
+        return this.postsService.getPost(id);
+    }
 
     @Mutation(() => String)
     @UseGuards(GqlAuthGuard)
@@ -26,5 +43,11 @@ export class PostsResolver {
         @CurrentUser() creator: User,
     ): Promise<string> {
         return this.postsService.deletePost(postId, creator);
+    }
+
+    @ResolveField('creator', () => User)
+    public async getCreator(@Parent() post: Post): Promise<User> {
+        const { creatorId } = post;
+        return this.userService.getUser(creatorId);
     }
 }

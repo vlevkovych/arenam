@@ -16,19 +16,19 @@ model User {
   signupDate   DateTime     @default(now()) @db.Timestamp(6)
   emailAddress String       @unique @db.VarChar
   password     String       @db.VarChar
-  Post         Post[]
-  PostRating   PostRating[]
+  posts        Post[]
+  postsRatings PostRating[]
 }
 
 model Post {
-  id         Int          @id @default(autoincrement())
-  title      String       @db.VarChar
-  body       String       @db.VarChar
-  creator    Int
-  rating     Int          @default(0)
-  createdAt  DateTime     @default(now()) @db.Timestamp(6)
-  User       User         @relation(fields: [creator], references: [id])
-  PostRating PostRating[]
+  id           Int          @id @default(autoincrement())
+  title        String       @db.VarChar
+  body         String       @db.VarChar
+  creatorId    Int
+  rating       Int          @default(0)
+  createdAt    DateTime     @default(now()) @db.Timestamp(6)
+  creator      User         @relation(fields: [creatorId], references: [id])
+  postsRatings PostRating[]
 }
 
 model PostRating {

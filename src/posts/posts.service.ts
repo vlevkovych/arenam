@@ -49,4 +49,8 @@ export class PostsService {
             where: { creatorId: id },
         });
     }
+
+    public async getPosts(): Promise<Post[]> {
+        return this.prisma.post.findMany();
+    }
 }

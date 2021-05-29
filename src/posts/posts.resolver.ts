@@ -1,6 +1,7 @@
 import { UseGuards } from '@nestjs/common';
 import {
     Args,
+    Int,
     Mutation,
     Parent,
     Query,
@@ -22,11 +23,16 @@ export class PostsResolver {
         private readonly userService: UserService,
     ) {}
 
-    @Query(() => Post)
+    @Query(() => Post, { nullable: true })
     public async getPost(
-        @Args('id', { nullable: true }) id: number,
+        @Args('id', { type: () => Int }) id: number,
     ): Promise<Post> {
         return this.postsService.getPostById(id);
+    }
+
+    @Query(() => [Post])
+    public async getPosts(): Promise<Post[]> {
+        return this.postsService.getPosts();
     }
 
     @Mutation(() => String)
@@ -41,7 +47,7 @@ export class PostsResolver {
     @Mutation(() => String)
     @UseGuards(GqlAuthGuard)
     public async deletePost(
-        @Args('postId') postId: number,
+        @Args('postId', { type: () => Int }) postId: number,
         @CurrentUser() user: User,
     ): Promise<string> {
         const userId = user.id;

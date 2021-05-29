@@ -70,7 +70,7 @@ export class PostsResolver {
     }
 
     @ResolveField('creator', () => User)
-    public async getCreator(@Parent() post: Post): Promise<User | undefined> {
+    public async getCreator(@Parent() post: Post): Promise<User> {
         const { creatorId } = post;
         return this.postsLoaders.batchCreators.load(creatorId);
     }

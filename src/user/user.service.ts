@@ -16,7 +16,7 @@ export class UserService {
         return user;
     }
 
-    public async getByIds(authorIds: readonly number[]): Promise<User[]> {
+    public async getUsersByIds(authorIds: readonly number[]): Promise<User[]> {
         return this.prisma.user.findMany({
             where: {
                 id: {

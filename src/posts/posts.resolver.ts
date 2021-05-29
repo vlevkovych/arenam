@@ -12,10 +12,10 @@ import {
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { User } from '../user/user.models';
-import { UserService } from '../user/user.service';
 
 import { CreatePostInput } from './dto/create-post.input';
 import { UpdatePostInput } from './dto/update-post.input';
+import PostsLoaders from './posts.loader';
 import { Post } from './posts.models';
 import { PostsService } from './posts.service';
 
@@ -23,7 +23,7 @@ import { PostsService } from './posts.service';
 export class PostsResolver {
     public constructor(
         private readonly postsService: PostsService,
-        private readonly userService: UserService,
+        private readonly postsLoaders: PostsLoaders,
     ) {}
 
     @Query(() => Post, { nullable: true })
@@ -72,6 +72,6 @@ export class PostsResolver {
     @ResolveField('creator', () => User)
     public async getCreator(@Parent() post: Post): Promise<User> {
         const { creatorId } = post;
-        return this.userService.getUserById(creatorId);
+        return this.postsLoaders.batchCreators.load(creatorId);
     }
 }

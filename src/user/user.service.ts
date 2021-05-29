@@ -15,4 +15,14 @@ export class UserService {
         }
         return user;
     }
+
+    public async getUsersByIds(authorIds: readonly number[]): Promise<User[]> {
+        return this.prisma.user.findMany({
+            where: {
+                id: {
+                    in: [...authorIds],
+                },
+            },
+        });
+    }
 }

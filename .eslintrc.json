@@ -36,6 +36,25 @@
                 "memberSyntaxSortOrder": ["all", "multiple", "none", "single"]
             }
         ],
+        "import/order": [
+            "error",
+            {
+                "alphabetize": {
+                    "caseInsensitive": true,
+                    "order": "asc"
+                },
+                "groups": ["builtin", "external", "object", "parent", "sibling", "index", "type"],
+                "newlines-between": "always",
+                "pathGroups": [
+                    {
+                        "group": "object",
+                        "pattern": "@dotgoclub/*",
+                        "position": "after"
+                    }
+                ],
+                "pathGroupsExcludedImportTypes": ["builtin", "type"]
+            }
+        ],
         "@typescript-eslint/no-type-alias": [
             "error",
             {

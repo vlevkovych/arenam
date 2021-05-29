@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+
 import { PrismaService } from '../config/prisma/prisma.service';
+
 import type { User } from './user.models';
 
 @Injectable()

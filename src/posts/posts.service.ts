@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+
 import { PrismaService } from '../config/prisma/prisma.service';
+
 import type { CreatePostInput } from './dto/create-post.input';
 import type { UpdatePostInput } from './dto/update-post.input';
 import type { Post } from './posts.models';

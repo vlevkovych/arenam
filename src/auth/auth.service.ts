@@ -22,15 +22,15 @@ export class AuthService {
         return bcrypt.compare(password, hashedPassword);
     }
 
-    public async login(loginInput: LoginInput): Promise<string> {
+    public async login(input: LoginInput): Promise<string> {
         const foundUser = await this.prisma.user.findUnique({
-            where: { emailAddress: loginInput.emailAddress },
+            where: { emailAddress: input.emailAddress },
         });
         if (!foundUser) {
             throw new BadRequestException('Wrong email or password');
         }
         const passwordValid = await AuthService.validate(
-            loginInput.password,
+            input.password,
             foundUser.password,
         );
         if (!passwordValid) {
@@ -39,9 +39,9 @@ export class AuthService {
         return `You are logged in, your token: ${this.signToken(foundUser.id)}`;
     }
 
-    public async register(signupInput: SignupInput): Promise<string> {
+    public async register(input: SignupInput): Promise<string> {
         const foundUser = await this.prisma.user.findFirst({
-            where: { emailAddress: signupInput.emailAddress },
+            where: { emailAddress: input.emailAddress },
         });
         if (foundUser) {
             throw new BadRequestException(
@@ -49,14 +49,14 @@ export class AuthService {
             );
         }
         try {
-            await signupInputValidationSchema.validateAsync(signupInput);
+            await signupInputValidationSchema.validateAsync(input);
         } catch (error: unknown) {
             throw new BadRequestException(error);
         }
-        const hashPassword = await bcrypt.hash(signupInput.password, 10);
+        const hashPassword = await bcrypt.hash(input.password, 10);
         await this.prisma.user.create({
             data: {
-                ...signupInput,
+                ...input,
                 password: hashPassword,
             },
         });

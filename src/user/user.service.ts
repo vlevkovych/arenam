@@ -6,7 +6,7 @@ import type { User } from './user.models';
 export class UserService {
     public constructor(private readonly prisma: PrismaService) {}
 
-    public async getUser(id: number): Promise<User> {
+    public async getUserById(id: number): Promise<User> {
         const user = await this.prisma.user.findFirst({ where: { id } });
         if (!user) {
             throw new NotFoundException('User not found');

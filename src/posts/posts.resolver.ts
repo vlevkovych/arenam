@@ -23,8 +23,10 @@ export class PostsResolver {
     ) {}
 
     @Query(() => Post)
-    public async getPost(@Args('id') id: number): Promise<Post> {
-        return this.postsService.getPost(id);
+    public async getPost(
+        @Args('id', { nullable: true }) id: number,
+    ): Promise<Post> {
+        return this.postsService.getPostById(id);
     }
 
     @Mutation(() => String)
@@ -40,14 +42,15 @@ export class PostsResolver {
     @UseGuards(GqlAuthGuard)
     public async deletePost(
         @Args('postId') postId: number,
-        @CurrentUser() creator: User,
+        @CurrentUser() user: User,
     ): Promise<string> {
-        return this.postsService.deletePost(postId, creator);
+        const userId = user.id;
+        return this.postsService.deletePost(postId, userId);
     }
 
     @ResolveField('creator', () => User)
     public async getCreator(@Parent() post: Post): Promise<User> {
         const { creatorId } = post;
-        return this.userService.getUser(creatorId);
+        return this.userService.getUserById(creatorId);
     }
 }

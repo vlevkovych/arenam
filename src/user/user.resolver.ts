@@ -25,17 +25,17 @@ export class UserResolver {
     public async getUser(
         @Args('id', { type: () => Int }) id: number,
     ): Promise<User> {
-        return this.userService.getUser(id);
+        return this.userService.getUserById(id);
     }
 
     @Query(() => User)
     @UseGuards(GqlAuthGuard)
     public async getMyProfile(@CurrentUser() user: User): Promise<User> {
-        return this.userService.getUser(user.id);
+        return this.userService.getUserById(user.id);
     }
 
     @ResolveField('posts', () => [Post])
     public async getUserPosts(@Parent() user: User): Promise<Post[]> {
-        return this.postsService.getUserPosts(user.id);
+        return this.postsService.getPostsByUserId(user.id);
     }
 }

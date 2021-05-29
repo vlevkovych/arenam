@@ -2,11 +2,22 @@
 CREATE TYPE "RatingStatus" AS ENUM ('neutral', 'upvoted', 'downvoted');
 
 -- CreateTable
+CREATE TABLE "User" (
+    "id" SERIAL NOT NULL,
+    "name" VARCHAR NOT NULL,
+    "signupDate" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "emailAddress" VARCHAR NOT NULL,
+    "password" VARCHAR NOT NULL,
+
+    PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Post" (
     "id" SERIAL NOT NULL,
     "title" VARCHAR NOT NULL,
     "body" VARCHAR NOT NULL,
-    "creator" INTEGER NOT NULL,
+    "creatorId" INTEGER NOT NULL,
     "rating" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -23,8 +34,11 @@ CREATE TABLE "PostRating" (
     PRIMARY KEY ("id")
 );
 
+-- CreateIndex
+CREATE UNIQUE INDEX "User.emailAddress_unique" ON "User"("emailAddress");
+
 -- AddForeignKey
-ALTER TABLE "Post" ADD FOREIGN KEY ("creator") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Post" ADD FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PostRating" ADD FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

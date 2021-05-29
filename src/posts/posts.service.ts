@@ -8,7 +8,7 @@ import type { Post } from './posts.models';
 export class PostsService {
     public constructor(private readonly prisma: PrismaService) {}
 
-    public async getPost(id: number): Promise<Post> {
+    public async getPostById(id: number): Promise<Post> {
         const post = await this.prisma.post.findFirst({ where: { id } });
         if (!post) {
             throw new NotFoundException('Post not found');
@@ -30,10 +30,10 @@ export class PostsService {
         return 'Post successfully created';
     }
 
-    public async deletePost(postId: number, creator: User): Promise<string> {
+    public async deletePost(postId: number, userId: number): Promise<string> {
         const post = await this.prisma.post.findFirst({
             where: {
-                creatorId: creator.id,
+                creatorId: userId,
                 id: postId,
             },
         });
@@ -44,13 +44,9 @@ export class PostsService {
         return 'Post does not exist or you are not the author';
     }
 
-    public async getUserPosts(id: number): Promise<Post[]> {
-        const posts = await this.prisma.post.findMany({
+    public async getPostsByUserId(id: number): Promise<Post[]> {
+        return this.prisma.post.findMany({
             where: { creatorId: id },
         });
-        if (posts.length === 0) {
-            return [];
-        }
-        return posts;
     }
 }

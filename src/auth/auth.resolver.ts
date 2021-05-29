@@ -8,16 +8,12 @@ export class AuthResolver {
     public constructor(private readonly authService: AuthService) {}
 
     @Mutation(() => String)
-    public async login(
-        @Args('loginInput') loginInput: LoginInput,
-    ): Promise<string> {
-        return this.authService.login(loginInput);
+    public async login(@Args('input') input: LoginInput): Promise<string> {
+        return this.authService.login(input);
     }
 
     @Mutation(() => String)
-    public async signUp(
-        @Args('signupInput') signupInput: SignupInput,
-    ): Promise<string> {
-        return this.authService.register(signupInput);
+    public async signUp(@Args('input') input: SignupInput): Promise<string> {
+        return this.authService.register(input);
     }
 }

@@ -1,12 +1,15 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import type { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+
 import { PrismaService } from '../config/prisma/prisma.service';
+
+import { signupInputValidationSchema } from './validation/signup.input.validation';
+
 import type { JwtDto } from './dto/jwt.dto';
 import type { LoginInput } from './dto/login.input';
 import type { SignupInput } from './dto/signup.input';
-import { signupInputValidationSchema } from './validation/signup.input.validation';
+import type { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {

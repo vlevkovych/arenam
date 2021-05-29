@@ -8,10 +8,12 @@ import {
     ResolveField,
     Resolver,
 } from '@nestjs/graphql';
+
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { User } from '../user/user.models';
 import { UserService } from '../user/user.service';
+
 import { CreatePostInput } from './dto/create-post.input';
 import { UpdatePostInput } from './dto/update-post.input';
 import { Post } from './posts.models';

@@ -10,6 +10,7 @@ import {
 } from '@nestjs/graphql';
 
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { GqlAnonymousGuard } from '../auth/guards/gql-anonymous.guard';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { User } from '../user/user.models';
 
@@ -27,6 +28,7 @@ export class PostsResolver {
     ) {}
 
     @Query(() => Post, { nullable: true })
+    @UseGuards(GqlAnonymousGuard)
     public async getPost(
         @Args('id', { type: () => Int }) id: number,
     ): Promise<Post> {
@@ -34,6 +36,7 @@ export class PostsResolver {
     }
 
     @Query(() => [Post])
+    @UseGuards(GqlAnonymousGuard)
     public async getPosts(): Promise<Post[]> {
         return this.postsService.getPosts();
     }

@@ -123,9 +123,9 @@ export class PostsResolver {
     @ResolveField('myRatingStatus', () => RatingStatus)
     public async getMyRatingStatus(
         @Parent() post: Post,
-        @CurrentUser() user: User,
+        @CurrentUser() user: User | null,
     ): Promise<string> {
-        if (user.id) {
+        if (user !== null) {
             const postId = post.id;
             const userId = user.id;
             return this.postsService.getMyRatingStatus(postId, userId);

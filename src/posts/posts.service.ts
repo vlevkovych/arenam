@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { RatingStatus } from '@prisma/client';
 
 import { PrismaService } from '../config/prisma/prisma.service';
 
@@ -76,5 +77,51 @@ export class PostsService {
 
     public async getPosts(): Promise<Post[]> {
         return this.prisma.post.findMany();
+    }
+
+    public async upvotePost(postId: number, userId: number): Promise<string> {
+        const rating = await this.prisma.postRating.findFirst({
+            where: {
+                postId,
+                userId,
+            },
+        });
+        if (rating) {
+            await this.prisma.postRating.update({
+                data: {
+                    rating: RatingStatus.upvoted,
+                },
+                where: {
+                    id: rating.id,
+                },
+            });
+        }
+        await this.prisma.postRating.create({
+            data: {
+                postId,
+                rating: RatingStatus.upvoted,
+                userId,
+            },
+        });
+        return 'Post upvoted';
+    }
+
+    public async getMyRatingStatus(
+        postId: number,
+        userId: number,
+    ): Promise<RatingStatus> {
+        const rating = await this.prisma.postRating.findFirst({
+            select: {
+                rating: true,
+            },
+            where: {
+                postId,
+                userId,
+            },
+        });
+        if (rating) {
+            return rating.rating;
+        }
+        return RatingStatus.neutral;
     }
 }

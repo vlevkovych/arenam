@@ -1,6 +1,16 @@
-import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 
 import { User } from '../user/user.models';
+
+export enum RatingStatus {
+    neutral = 'neutral',
+    upvoted = 'upvoted',
+    downvoted = 'downvoted',
+}
+
+registerEnumType(RatingStatus, {
+    name: 'RatingStatus',
+});
 
 @ObjectType()
 export class Post {
@@ -22,8 +32,8 @@ export class Post {
     @Field()
     public createdAt!: Date;
 
-    @Field(() => String, { nullable: true })
-    public myRatingStatus?: string | null;
+    @Field(() => RatingStatus, { defaultValue: RatingStatus.neutral })
+    public myRatingStatus?: RatingStatus;
 
     @Field(() => Int)
     public creatorId!: number;

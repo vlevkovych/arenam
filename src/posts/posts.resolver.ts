@@ -17,7 +17,7 @@ import { User } from '../user/user.models';
 import { CreatePostInput } from './dto/create-post.input';
 import { UpdatePostInput } from './dto/update-post.input';
 import PostsLoaders from './posts.loader';
-import { Post } from './posts.models';
+import { Post, RatingStatus } from './posts.models';
 import { PostsService } from './posts.service';
 
 @Resolver(() => Post)
@@ -72,9 +72,32 @@ export class PostsResolver {
         return this.postsService.deletePost(postId, userId);
     }
 
+    @Mutation(() => String)
+    @UseGuards(GqlAuthGuard)
+    public async upvotePost(
+        @Args('postId', { type: () => Int }) postId: number,
+        @CurrentUser() user: User,
+    ): Promise<string> {
+        const userId = user.id;
+        return this.postsService.upvotePost(postId, userId);
+    }
+
     @ResolveField('creator', () => User)
     public async getCreator(@Parent() post: Post): Promise<User> {
         const { creatorId } = post;
         return this.postsLoaders.batchCreators.load(creatorId);
+    }
+
+    @ResolveField('myRatingStatus', () => RatingStatus)
+    public async getMyRatingStatus(
+        @Parent() post: Post,
+        @CurrentUser() user: User,
+    ): Promise<string> {
+        if (!user.id) {
+            return RatingStatus.neutral;
+        }
+        const postId = post.id;
+        const userId = user.id;
+        return this.postsService.getMyRatingStatus(postId, userId);
     }
 }

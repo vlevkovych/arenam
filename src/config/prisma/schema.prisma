@@ -32,12 +32,13 @@ model Post {
 }
 
 model PostRating {
-  id     Int          @id @default(autoincrement())
   userId Int
   postId Int
   rating RatingStatus
   user   User         @relation(fields: [userId], references: [id])
   post   Post         @relation(fields: [postId], references: [id])
+
+  @@unique(fields: [userId, postId], name: "UserAndPostIds")
 }
 
 enum RatingStatus {

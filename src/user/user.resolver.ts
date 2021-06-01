@@ -9,6 +9,7 @@ import {
 } from '@nestjs/graphql';
 
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { GqlAnonymousGuard } from '../auth/guards/gql-anonymous.guard';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { Post } from '../posts/posts.models';
 import { PostsService } from '../posts/posts.service';
@@ -24,6 +25,7 @@ export class UserResolver {
     ) {}
 
     @Query(() => User, { nullable: true })
+    @UseGuards(GqlAnonymousGuard)
     public async getUser(
         @Args('id', { type: () => Int }) id: number,
     ): Promise<User> {

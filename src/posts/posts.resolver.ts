@@ -10,13 +10,14 @@ import {
 } from '@nestjs/graphql';
 
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { GqlAnonymousGuard } from '../auth/guards/gql-anonymous.guard';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { User } from '../user/user.models';
 
 import { CreatePostInput } from './dto/create-post.input';
 import { UpdatePostInput } from './dto/update-post.input';
 import PostsLoaders from './posts.loader';
-import { Post } from './posts.models';
+import { Post, RatingStatus } from './posts.models';
 import { PostsService } from './posts.service';
 
 @Resolver(() => Post)
@@ -27,6 +28,7 @@ export class PostsResolver {
     ) {}
 
     @Query(() => Post, { nullable: true })
+    @UseGuards(GqlAnonymousGuard)
     public async getPost(
         @Args('id', { type: () => Int }) id: number,
     ): Promise<Post> {
@@ -34,6 +36,7 @@ export class PostsResolver {
     }
 
     @Query(() => [Post])
+    @UseGuards(GqlAnonymousGuard)
     public async getPosts(): Promise<Post[]> {
         return this.postsService.getPosts();
     }
@@ -69,9 +72,64 @@ export class PostsResolver {
         return this.postsService.deletePost(postId, userId);
     }
 
+    @Mutation(() => String)
+    @UseGuards(GqlAuthGuard)
+    public async upvotePost(
+        @Args('postId', { type: () => Int }) postId: number,
+        @CurrentUser() user: User,
+    ): Promise<string> {
+        const userId = user.id;
+        return this.postsService.changeRatingStatus(
+            postId,
+            userId,
+            RatingStatus.upvoted,
+        );
+    }
+
+    @Mutation(() => String)
+    @UseGuards(GqlAuthGuard)
+    public async downvotePost(
+        @Args('postId', { type: () => Int }) postId: number,
+        @CurrentUser() user: User,
+    ): Promise<string> {
+        const userId = user.id;
+        return this.postsService.changeRatingStatus(
+            postId,
+            userId,
+            RatingStatus.downvoted,
+        );
+    }
+
+    @Mutation(() => String)
+    @UseGuards(GqlAuthGuard)
+    public async removeRatingFromPost(
+        @Args('postId', { type: () => Int }) postId: number,
+        @CurrentUser() user: User,
+    ): Promise<string> {
+        const userId = user.id;
+        return this.postsService.changeRatingStatus(
+            postId,
+            userId,
+            RatingStatus.neutral,
+        );
+    }
+
     @ResolveField('creator', () => User)
     public async getCreator(@Parent() post: Post): Promise<User> {
         const { creatorId } = post;
         return this.postsLoaders.batchCreators.load(creatorId);
+    }
+
+    @ResolveField('myRatingStatus', () => RatingStatus)
+    public async getMyRatingStatus(
+        @Parent() post: Post,
+        @CurrentUser() user: User | null,
+    ): Promise<string> {
+        if (user !== null) {
+            const postId = post.id;
+            const userId = user.id;
+            return this.postsService.getMyRatingStatus(postId, userId);
+        }
+        return RatingStatus.neutral;
     }
 }

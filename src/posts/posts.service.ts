@@ -84,27 +84,20 @@ export class PostsService {
         userId: number,
         ratingStatus: RatingStatus,
     ): Promise<string> {
-        const rating = await this.prisma.postRating.findFirst({
-            where: {
-                postId,
-                userId,
-            },
-        });
-        if (rating !== null) {
-            await this.prisma.postRating.update({
-                data: {
-                    rating: ratingStatus,
-                },
-                where: {
-                    id: rating.id,
-                },
-            });
-        }
-        await this.prisma.postRating.create({
-            data: {
+        await this.prisma.postRating.upsert({
+            create: {
                 postId,
                 rating: ratingStatus,
                 userId,
+            },
+            update: {
+                rating: ratingStatus,
+            },
+            where: {
+                UserAndPostIds: {
+                    postId,
+                    userId,
+                },
             },
         });
         return `Post rating set to ${ratingStatus}`;

@@ -79,7 +79,39 @@ export class PostsResolver {
         @CurrentUser() user: User,
     ): Promise<string> {
         const userId = user.id;
-        return this.postsService.upvotePost(postId, userId);
+        return this.postsService.changeRatingStatus(
+            postId,
+            userId,
+            RatingStatus.upvoted,
+        );
+    }
+
+    @Mutation(() => String)
+    @UseGuards(GqlAuthGuard)
+    public async downvotePost(
+        @Args('postId', { type: () => Int }) postId: number,
+        @CurrentUser() user: User,
+    ): Promise<string> {
+        const userId = user.id;
+        return this.postsService.changeRatingStatus(
+            postId,
+            userId,
+            RatingStatus.downvoted,
+        );
+    }
+
+    @Mutation(() => String)
+    @UseGuards(GqlAuthGuard)
+    public async removeRatingFromPost(
+        @Args('postId', { type: () => Int }) postId: number,
+        @CurrentUser() user: User,
+    ): Promise<string> {
+        const userId = user.id;
+        return this.postsService.changeRatingStatus(
+            postId,
+            userId,
+            RatingStatus.neutral,
+        );
     }
 
     @ResolveField('creator', () => User)
@@ -93,11 +125,12 @@ export class PostsResolver {
         @Parent() post: Post,
         @CurrentUser() user: User,
     ): Promise<string> {
-        if (!user.id) {
-            return RatingStatus.neutral;
+        if (user.id) {
+            const postId = post.id;
+            const userId = user.id;
+            return this.postsService.getMyRatingStatus(postId, userId);
         }
-        const postId = post.id;
-        const userId = user.id;
-        return this.postsService.getMyRatingStatus(postId, userId);
+        return RatingStatus.neutral;
+
     }
 }

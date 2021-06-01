@@ -79,17 +79,21 @@ export class PostsService {
         return this.prisma.post.findMany();
     }
 
-    public async upvotePost(postId: number, userId: number): Promise<string> {
+    public async changeRatingStatus(
+        postId: number,
+        userId: number,
+        ratingStatus: RatingStatus,
+    ): Promise<string> {
         const rating = await this.prisma.postRating.findFirst({
             where: {
                 postId,
                 userId,
             },
         });
-        if (rating) {
+        if (rating !== null) {
             await this.prisma.postRating.update({
                 data: {
-                    rating: RatingStatus.upvoted,
+                    rating: ratingStatus,
                 },
                 where: {
                     id: rating.id,
@@ -99,11 +103,11 @@ export class PostsService {
         await this.prisma.postRating.create({
             data: {
                 postId,
-                rating: RatingStatus.upvoted,
+                rating: ratingStatus,
                 userId,
             },
         });
-        return 'Post upvoted';
+        return `Post rating set to ${ratingStatus}`;
     }
 
     public async getMyRatingStatus(

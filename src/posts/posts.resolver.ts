@@ -131,6 +131,5 @@ export class PostsResolver {
             return this.postsService.getMyRatingStatus(postId, userId);
         }
         return RatingStatus.neutral;
-
     }
 }

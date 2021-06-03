@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../config/prisma/prisma.service';
 
+import type { Comment } from './comments.models';
 import type { CreateCommentInput } from './dto/create-comment.input';
 import type { NewReplyPayload } from './dto/new-reply.payload';
 
@@ -43,5 +44,13 @@ export class CommentsService {
             comment,
             errors: [],
         };
+    }
+
+    public async getCommentsByPostId(postId: number): Promise<Comment[]> {
+        return this.prisma.comment.findMany({
+            where: {
+                postId,
+            },
+        });
     }
 }

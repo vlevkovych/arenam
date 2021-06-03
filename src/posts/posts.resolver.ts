@@ -15,7 +15,11 @@ import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { User } from '../user/user.models';
 
 import { CreatePostInput } from './dto/create-post.input';
+import { CreatePostPayload } from './dto/create-post.payload';
+import { DeletePostPayload } from './dto/delete-post.payload';
+import { RatePostPayload } from './dto/rate-post.payload';
 import { UpdatePostInput } from './dto/update-post.input';
+import { UpdatePostPayload } from './dto/update-post.payload';
 import PostsLoaders from './posts.loader';
 import { Post, RatingStatus } from './posts.models';
 import { PostsService } from './posts.service';
@@ -41,43 +45,43 @@ export class PostsResolver {
         return this.postsService.getPosts();
     }
 
-    @Mutation(() => String)
+    @Mutation(() => CreatePostPayload)
     @UseGuards(GqlAuthGuard)
     public async createPost(
         @Args('input') input: CreatePostInput,
         @CurrentUser() user: User,
-    ): Promise<string> {
+    ): Promise<CreatePostPayload> {
         const userId = user.id;
         return this.postsService.createPost(input, userId);
     }
 
-    @Mutation(() => String)
+    @Mutation(() => UpdatePostPayload)
     @UseGuards(GqlAuthGuard)
     public async updatePost(
         @Args('id', { type: () => Int }) id: number,
         @Args('input') input: UpdatePostInput,
         @CurrentUser() user: User,
-    ): Promise<string> {
+    ): Promise<UpdatePostPayload> {
         const userId = user.id;
         return this.postsService.updatePost(id, input, userId);
     }
 
-    @Mutation(() => String)
+    @Mutation(() => DeletePostPayload)
     @UseGuards(GqlAuthGuard)
     public async deletePost(
         @Args('postId', { type: () => Int }) postId: number,
         @CurrentUser() user: User,
-    ): Promise<string> {
+    ): Promise<DeletePostPayload> {
         const userId = user.id;
         return this.postsService.deletePost(postId, userId);
     }
 
-    @Mutation(() => String)
+    @Mutation(() => RatePostPayload)
     @UseGuards(GqlAuthGuard)
     public async upvotePost(
         @Args('postId', { type: () => Int }) postId: number,
         @CurrentUser() user: User,
-    ): Promise<string> {
+    ): Promise<RatePostPayload> {
         const userId = user.id;
         return this.postsService.changeRatingStatus(
             postId,
@@ -86,12 +90,12 @@ export class PostsResolver {
         );
     }
 
-    @Mutation(() => String)
+    @Mutation(() => RatePostPayload)
     @UseGuards(GqlAuthGuard)
     public async downvotePost(
         @Args('postId', { type: () => Int }) postId: number,
         @CurrentUser() user: User,
-    ): Promise<string> {
+    ): Promise<RatePostPayload> {
         const userId = user.id;
         return this.postsService.changeRatingStatus(
             postId,
@@ -100,12 +104,12 @@ export class PostsResolver {
         );
     }
 
-    @Mutation(() => String)
+    @Mutation(() => RatePostPayload)
     @UseGuards(GqlAuthGuard)
     public async removeRatingFromPost(
         @Args('postId', { type: () => Int }) postId: number,
         @CurrentUser() user: User,
-    ): Promise<string> {
+    ): Promise<RatePostPayload> {
         const userId = user.id;
         return this.postsService.changeRatingStatus(
             postId,

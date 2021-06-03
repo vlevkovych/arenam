@@ -1,14 +1,17 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
+import { ValidationError } from '../common/errors/validation.error';
 import { PrismaService } from '../config/prisma/prisma.service';
 
 import { signupInputValidationSchema } from './validation/signup.input.validation';
 
 import type { JwtDto } from './dto/jwt.dto';
 import type { LoginInput } from './dto/login.input';
+import type { LoginPayload } from './dto/login.payload';
 import type { SignupInput } from './dto/signup.input';
+import type { SignupPayload } from './dto/signup.payload';
 import type { User } from '@prisma/client';
 
 @Injectable()
@@ -25,36 +28,40 @@ export class AuthService {
         return bcrypt.compare(password, hashedPassword);
     }
 
-    public async login(input: LoginInput): Promise<string> {
+    public async login(input: LoginInput): Promise<LoginPayload> {
         const foundUser = await this.prisma.user.findUnique({
             where: { emailAddress: input.emailAddress },
         });
+        const validationErrorPayload = {
+            errors: [
+                {
+                    field: ['emailAddress', 'password'],
+                    message: 'Wrong email or password',
+                },
+            ],
+            isLoginSuccessful: false,
+        };
         if (!foundUser) {
-            throw new BadRequestException('Wrong email or password');
+            return validationErrorPayload;
         }
         const passwordValid = await AuthService.validate(
             input.password,
             foundUser.password,
         );
         if (!passwordValid) {
-            throw new BadRequestException('Wrong email or password');
+            return validationErrorPayload;
         }
-        return `You are logged in, your token: ${this.signToken(foundUser.id)}`;
+        return {
+            errors: [],
+            isLoginSuccessful: true,
+            jwtToken: this.signToken(foundUser.id),
+        };
     }
 
-    public async register(input: SignupInput): Promise<string> {
-        const foundUser = await this.prisma.user.findFirst({
-            where: { emailAddress: input.emailAddress },
-        });
-        if (foundUser) {
-            throw new BadRequestException(
-                'User with same email is already exist',
-            );
-        }
-        try {
-            await signupInputValidationSchema.validateAsync(input);
-        } catch (error: unknown) {
-            throw new BadRequestException(error);
+    public async register(input: SignupInput): Promise<SignupPayload> {
+        const validationPayload = await this.signupValidation(input);
+        if (validationPayload !== null) {
+            return validationPayload;
         }
         const hashPassword = await bcrypt.hash(input.password, 10);
         await this.prisma.user.create({
@@ -63,11 +70,51 @@ export class AuthService {
                 password: hashPassword,
             },
         });
-        return 'Signup Successful';
+        return {
+            errors: [],
+            isSignupSuccessful: true,
+        };
     }
 
     public async validateUser(userId: number): Promise<User | null> {
         return this.prisma.user.findFirst({ where: { id: userId } });
+    }
+
+    private async signupValidation(
+        input: SignupInput,
+    ): Promise<SignupPayload | null> {
+        const foundUser = await this.prisma.user.findFirst({
+            where: { emailAddress: input.emailAddress },
+        });
+
+        if (foundUser) {
+            return {
+                errors: [
+                    {
+                        field: ['emailAddress'],
+                        message: 'User with same email is already exist',
+                    },
+                ],
+                isSignupSuccessful: false,
+            };
+        }
+        try {
+            await signupInputValidationSchema.validateAsync(input);
+        } catch (error: unknown) {
+            if (error instanceof ValidationError) {
+                return {
+                    errors: [
+                        {
+                            field: [error.fieldName],
+                            message: error.message,
+                        },
+                    ],
+                    isSignupSuccessful: false,
+                };
+            }
+            throw error;
+        }
+        return null;
     }
 
     private signToken(id: number): string {

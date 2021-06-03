@@ -4,7 +4,11 @@ import { RatingStatus } from '@prisma/client';
 import { PrismaService } from '../config/prisma/prisma.service';
 
 import type { CreatePostInput } from './dto/create-post.input';
+import type { CreatePostPayload } from './dto/create-post.payload';
+import type { DeletePostPayload } from './dto/delete-post.payload';
+import type { RatePostPayload } from './dto/rate-post.payload';
 import type { UpdatePostInput } from './dto/update-post.input';
+import type { UpdatePostPayload } from './dto/update-post.payload';
 import type { Post } from './posts.models';
 
 @Injectable()
@@ -22,21 +26,24 @@ export class PostsService {
     public async createPost(
         input: CreatePostInput,
         creatorId: number,
-    ): Promise<string> {
-        await this.prisma.post.create({
+    ): Promise<CreatePostPayload> {
+        const post = await this.prisma.post.create({
             data: {
                 ...input,
                 creatorId,
             },
         });
-        return 'Post successfully created';
+        return {
+            errors: [],
+            post,
+        };
     }
 
     public async updatePost(
         postId: number,
         input: UpdatePostInput,
         creatorId: number,
-    ): Promise<string> {
+    ): Promise<UpdatePostPayload> {
         const post = await this.prisma.post.findFirst({
             where: {
                 creatorId,
@@ -44,18 +51,32 @@ export class PostsService {
             },
         });
         if (!post) {
-            return 'Post does not exist or you are not the author ';
+            return {
+                errors: [
+                    {
+                        field: [],
+                        message:
+                            'Post does not exist or you are not the author',
+                    },
+                ],
+            };
         }
-        await this.prisma.post.update({
+        const updatedPost = await this.prisma.post.update({
             data: input,
             where: {
                 id: postId,
             },
         });
-        return 'Post successfully updated';
+        return {
+            errors: [],
+            post: updatedPost,
+        };
     }
 
-    public async deletePost(postId: number, userId: number): Promise<string> {
+    public async deletePost(
+        postId: number,
+        userId: number,
+    ): Promise<DeletePostPayload> {
         const post = await this.prisma.post.findFirst({
             where: {
                 creatorId: userId,
@@ -63,10 +84,22 @@ export class PostsService {
             },
         });
         if (!post) {
-            return 'Post does not exist or you are not the author';
+            return {
+                errors: [
+                    {
+                        field: [],
+                        message:
+                            'Post does not exist or you are not the author',
+                    },
+                ],
+                isDeleteSuccessful: false,
+            };
         }
         await this.prisma.post.delete({ where: { id: post.id } });
-        return 'Post successfully deleted';
+        return {
+            errors: [],
+            isDeleteSuccessful: true,
+        };
     }
 
     public async getPostsByUserId(id: number): Promise<Post[]> {
@@ -83,7 +116,7 @@ export class PostsService {
         postId: number,
         userId: number,
         ratingStatus: RatingStatus,
-    ): Promise<string> {
+    ): Promise<RatePostPayload> {
         const previousStatus = await this.prisma.postRating.findUnique({
             select: {
                 rating: true,
@@ -96,7 +129,10 @@ export class PostsService {
             },
         });
         if (previousStatus && previousStatus.rating === ratingStatus) {
-            return 'Nothing changed';
+            return {
+                errors: [],
+                isRateSuccessful: true,
+            };
         }
         if (previousStatus === null) {
             await this.changePostRating(
@@ -117,17 +153,13 @@ export class PostsService {
                 rating: ratingStatus,
                 userId,
             },
-            update: {
-                rating: ratingStatus,
-            },
-            where: {
-                UserAndPostIds: {
-                    postId,
-                    userId,
-                },
-            },
+            update: { rating: ratingStatus },
+            where: { UserAndPostIds: { postId, userId } },
         });
-        return `Post rating set to ${ratingStatus}`;
+        return {
+            errors: [],
+            isRateSuccessful: true,
+        };
     }
 
     public async getMyRatingStatus(

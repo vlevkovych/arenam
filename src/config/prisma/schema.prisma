@@ -34,17 +34,17 @@ model Post {
 }
 
 model Comment {
-  id        Int       @id @default(autoincrement())
-  text      String    @db.VarChar
-  rating    Int       @default(0)
-  createdAt DateTime  @default(now()) @db.Timestamp(6)
-  creatorId Int
-  postId    Int?
-  repliedTo Int?
-  user      User      @relation(fields: [creatorId], references: [id])
-  post      Post?     @relation(fields: [postId], references: [id])
-  comment   Comment?  @relation(fields: [repliedTo], references: [id])
-  Comment   Comment[] @relation("CommentToComment")
+  id          Int       @id @default(autoincrement())
+  text        String    @db.VarChar
+  rating      Int       @default(0)
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  creatorId   Int
+  postId      Int?
+  repliedToId Int?
+  user        User      @relation(fields: [creatorId], references: [id])
+  post        Post?     @relation(fields: [postId], references: [id])
+  comment     Comment?  @relation(fields: [repliedToId], references: [id])
+  Comment     Comment[] @relation("CommentToComment")
 }
 
 model PostRating {

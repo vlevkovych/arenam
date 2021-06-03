@@ -22,19 +22,6 @@ type SignupPayload implements MutationPayload {
   isSignupSuccessful: Boolean!
 }
 
-type User {
-  id: ID!
-  name: String!
-  signupDate: DateTime!
-  emailAddress: String!
-  posts: [Post!]!
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
 type Post {
   id: ID!
   title: String!
@@ -46,10 +33,41 @@ type Post {
   creatorId: Int!
 }
 
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 enum RatingStatus {
   neutral
   upvoted
   downvoted
+}
+
+type User {
+  id: ID!
+  name: String!
+  signupDate: DateTime!
+  emailAddress: String!
+  posts: [Post!]!
+}
+
+type Comment {
+  id: ID!
+  text: String!
+  creator: User!
+  rating: Int!
+  myRatingStatus: RatingStatus!
+  createdAt: DateTime!
+  post: Post
+  repliedTo: Comment
+  replies: [Comment!]!
+  creatorId: Int!
+}
+
+type NewReplyPayload implements MutationPayload {
+  errors: [UserError!]!
+  comment: Comment
 }
 
 type CreatePostPayload implements MutationPayload {
@@ -88,6 +106,7 @@ type Mutation {
   upvotePost(postId: Int!): RatePostPayload!
   downvotePost(postId: Int!): RatePostPayload!
   removeRatingFromPost(postId: Int!): RatePostPayload!
+  replyToPost(input: CreateCommentInput!, postId: Int!): NewReplyPayload!
 }
 
 input LoginInput {
@@ -109,4 +128,8 @@ input CreatePostInput {
 input UpdatePostInput {
   title: String
   body: String
+}
+
+input CreateCommentInput {
+  text: String!
 }

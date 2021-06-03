@@ -35,10 +35,7 @@ export class Comment {
     public repliedTo?: Comment;
 
     @Field(() => [Comment])
-    public replies!: Comment[];
-
-    @Field(() => String)
-    public body!: string;
+    public replies?: Comment[];
 
     @Field(() => Int)
     public creatorId!: number;

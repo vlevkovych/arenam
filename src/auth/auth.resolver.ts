@@ -3,6 +3,7 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { LoginInput } from './dto/login.input';
 import { SignupInput } from './dto/signup.input';
+import { SignupPayload } from './dto/signup.payload';
 
 @Resolver()
 export class AuthResolver {
@@ -13,8 +14,10 @@ export class AuthResolver {
         return this.authService.login(input);
     }
 
-    @Mutation(() => String)
-    public async signUp(@Args('input') input: SignupInput): Promise<string> {
+    @Mutation(() => SignupPayload)
+    public async signUp(
+        @Args('input') input: SignupInput,
+    ): Promise<SignupPayload> {
         return this.authService.register(input);
     }
 }

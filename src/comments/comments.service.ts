@@ -53,4 +53,12 @@ export class CommentsService {
             },
         });
     }
+
+    public async getRepliesToComment(id: number): Promise<Comment[]> {
+        return this.prisma.comment.findMany({
+            where: {
+                repliedToId: id,
+            },
+        });
+    }
 }

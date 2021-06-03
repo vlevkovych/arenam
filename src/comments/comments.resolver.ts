@@ -52,4 +52,10 @@ export class CommentsResolver {
         const { creatorId } = comment;
         return this.commentsLoader.batchCreators.load(creatorId);
     }
+
+    @ResolveField('replies', () => [Comment])
+    public async replies(@Parent() comment: Comment): Promise<Comment[]> {
+        const { id } = comment;
+        return this.commentsService.getRepliesToComment(id);
+    }
 }

@@ -12,6 +12,9 @@ import {
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { GqlAnonymousGuard } from '../auth/guards/gql-anonymous.guard';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
+import { Comment } from '../comments/comments.models';
+import { CommentsService } from '../comments/comments.service';
+import { RatingStatus } from '../common/graphql/enums/rating-status.enum';
 import { User } from '../user/user.models';
 
 import { CreatePostInput } from './dto/create-post.input';
@@ -21,7 +24,7 @@ import { RatePostPayload } from './dto/rate-post.payload';
 import { UpdatePostInput } from './dto/update-post.input';
 import { UpdatePostPayload } from './dto/update-post.payload';
 import PostsLoaders from './posts.loader';
-import { Post, RatingStatus } from './posts.models';
+import { Post } from './posts.models';
 import { PostsService } from './posts.service';
 
 @Resolver(() => Post)
@@ -29,6 +32,7 @@ export class PostsResolver {
     public constructor(
         private readonly postsService: PostsService,
         private readonly postsLoaders: PostsLoaders,
+        private readonly commentsService: CommentsService,
     ) {}
 
     @Query(() => Post, { nullable: true })
@@ -122,6 +126,12 @@ export class PostsResolver {
     public async getCreator(@Parent() post: Post): Promise<User> {
         const { creatorId } = post;
         return this.postsLoaders.batchCreators.load(creatorId);
+    }
+
+    @ResolveField('comments', () => [Comment])
+    public async getComments(@Parent() post: Post): Promise<Comment[]> {
+        const postId = post.id;
+        return this.commentsService.getCommentsByPostId(postId);
     }
 
     @ResolveField('myRatingStatus', () => RatingStatus)

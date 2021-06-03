@@ -1,5 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
 
+import { CommentsModule } from '../comments/comments.module';
 import { PrismaModule } from '../config/prisma/prisma.module';
 import { UserModule } from '../user/user.module';
 
@@ -9,7 +10,11 @@ import { PostsService } from './posts.service';
 
 @Module({
     exports: [PostsService],
-    imports: [PrismaModule, forwardRef(() => UserModule)],
+    imports: [
+        PrismaModule,
+        forwardRef(() => UserModule),
+        forwardRef(() => CommentsModule),
+    ],
     providers: [PostsService, PostsResolver, PostsLoaders],
 })
 export class PostsModule {}

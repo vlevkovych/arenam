@@ -1,12 +1,8 @@
 import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 
+import { Comment } from '../comments/comments.models';
+import { RatingStatus } from '../common/graphql/enums/rating-status.enum';
 import { User } from '../user/user.models';
-
-export enum RatingStatus {
-    neutral = 'neutral',
-    upvoted = 'upvoted',
-    downvoted = 'downvoted',
-}
 
 registerEnumType(RatingStatus, {
     name: 'RatingStatus',
@@ -37,4 +33,7 @@ export class Post {
 
     @Field(() => Int)
     public creatorId!: number;
+
+    @Field(() => [Comment])
+    public comments?: Comment[];
 }

@@ -1,0 +1,139 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type UserError {
+  message: String!
+  field: [String!]
+}
+
+type LoginPayload implements MutationPayload {
+  errors: [UserError!]!
+  isLoginSuccessful: Boolean!
+  jwtToken: String
+}
+
+interface MutationPayload {
+  errors: [UserError!]!
+}
+
+type SignupPayload implements MutationPayload {
+  errors: [UserError!]!
+  isSignupSuccessful: Boolean!
+}
+
+type User {
+  id: ID!
+  name: String!
+  signupDate: DateTime!
+  emailAddress: String!
+  posts: [Post!]!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Comment {
+  id: ID!
+  text: String!
+  creator: User!
+  rating: Int!
+  myRatingStatus: RatingStatus!
+  createdAt: DateTime!
+  post: Post
+  postId: Int
+  repliedTo: Comment
+  repliedToId: Int
+  replies: [Comment!]!
+  creatorId: Int!
+}
+
+enum RatingStatus {
+  neutral
+  upvoted
+  downvoted
+}
+
+type Post {
+  id: ID!
+  title: String!
+  body: String!
+  creator: User!
+  rating: Int!
+  createdAt: DateTime!
+  myRatingStatus: RatingStatus!
+  creatorId: Int!
+  comments: [Comment!]!
+}
+
+type CreatePostPayload implements MutationPayload {
+  errors: [UserError!]!
+  post: Post
+}
+
+type DeletePostPayload implements MutationPayload {
+  errors: [UserError!]!
+  isDeleteSuccessful: Boolean!
+}
+
+type RatePostPayload implements MutationPayload {
+  errors: [UserError!]!
+  isRateSuccessful: Boolean!
+}
+
+type UpdatePostPayload implements MutationPayload {
+  errors: [UserError!]!
+  post: Post
+}
+
+type NewReplyPayload implements MutationPayload {
+  errors: [UserError!]!
+  comment: Comment
+}
+
+type Query {
+  getUser(id: Int!): User
+  getMyProfile: User!
+  getPost(id: Int!): Post
+  getPosts: [Post!]!
+}
+
+type Mutation {
+  login(input: LoginInput!): LoginPayload!
+  signUp(input: SignupInput!): SignupPayload!
+  createPost(input: CreatePostInput!): CreatePostPayload!
+  updatePost(input: UpdatePostInput!, id: Int!): UpdatePostPayload!
+  deletePost(postId: Int!): DeletePostPayload!
+  upvotePost(postId: Int!): RatePostPayload!
+  downvotePost(postId: Int!): RatePostPayload!
+  removeRatingFromPost(postId: Int!): RatePostPayload!
+  replyToPost(input: CreateCommentInput!, postId: Int!): NewReplyPayload!
+  replyToComment(input: CreateCommentInput!, commentId: Int!): NewReplyPayload!
+}
+
+input LoginInput {
+  emailAddress: String!
+  password: String!
+}
+
+input SignupInput {
+  emailAddress: String!
+  password: String!
+  name: String!
+}
+
+input CreatePostInput {
+  title: String!
+  body: String!
+}
+
+input UpdatePostInput {
+  title: String
+  body: String
+}
+
+input CreateCommentInput {
+  text: String!
+}

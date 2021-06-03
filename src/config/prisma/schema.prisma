@@ -18,6 +18,7 @@ model User {
   password     String       @db.VarChar
   posts        Post[]
   postsRatings PostRating[]
+  comments     Comment[]
 }
 
 model Post {
@@ -29,6 +30,21 @@ model Post {
   createdAt    DateTime     @default(now()) @db.Timestamp(6)
   creator      User         @relation(fields: [creatorId], references: [id])
   postsRatings PostRating[]
+  comments     Comment[]
+}
+
+model Comment {
+  id          Int       @id @default(autoincrement())
+  text        String    @db.VarChar
+  rating      Int       @default(0)
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  creatorId   Int
+  postId      Int?
+  repliedToId Int?
+  user        User      @relation(fields: [creatorId], references: [id])
+  post        Post?     @relation(fields: [postId], references: [id])
+  comment     Comment?  @relation(fields: [repliedToId], references: [id])
+  Comment     Comment[] @relation("CommentToComment")
 }
 
 model PostRating {

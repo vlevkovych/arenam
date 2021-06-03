@@ -181,6 +181,16 @@ export class PostsService {
         return RatingStatus.neutral;
     }
 
+    public async getPostsByIds(keys: readonly number[]): Promise<Post[]> {
+        return this.prisma.post.findMany({
+            where: {
+                id: {
+                    in: [...keys],
+                },
+            },
+        });
+    }
+
     private async changePostRating(
         postId: number,
         previousStatus: RatingStatus,

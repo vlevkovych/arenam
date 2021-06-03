@@ -107,6 +107,7 @@ type Mutation {
   downvotePost(postId: Int!): RatePostPayload!
   removeRatingFromPost(postId: Int!): RatePostPayload!
   replyToPost(input: CreateCommentInput!, postId: Int!): NewReplyPayload!
+  replyToComment(input: CreateCommentInput!, commentId: Int!): NewReplyPayload!
 }
 
 input LoginInput {

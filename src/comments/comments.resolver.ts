@@ -23,4 +23,15 @@ export class CommentsResolver {
         const userId = user.id;
         return this.commentsService.replyToPost(postId, userId, input);
     }
+
+    @Mutation(() => NewReplyPayload)
+    @UseGuards(GqlAuthGuard)
+    public async replyToComment(
+        @Args('commentId', { type: () => Int }) commentId: number,
+        @Args('input') input: CreateCommentInput,
+        @CurrentUser() user: User,
+    ): Promise<NewReplyPayload> {
+        const userId = user.id;
+        return this.commentsService.replyToComment(commentId, userId, input);
+    }
 }

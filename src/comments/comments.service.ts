@@ -26,4 +26,22 @@ export class CommentsService {
             errors: [],
         };
     }
+
+    public async replyToComment(
+        commentId: number,
+        creatorId: number,
+        input: CreateCommentInput,
+    ): Promise<NewReplyPayload> {
+        const comment = await this.prisma.comment.create({
+            data: {
+                creatorId,
+                repliedToId: commentId,
+                text: input.text,
+            },
+        });
+        return {
+            comment,
+            errors: [],
+        };
+    }
 }

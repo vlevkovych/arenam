@@ -11,6 +11,6 @@ export class LoginPayload implements MutationPayload {
     @Field(() => Boolean)
     public isLoginSuccessful!: boolean;
 
-    @Field(() => String)
-    public jwtToken!: string;
+    @Field(() => String, { nullable: true })
+    public jwtToken?: string;
 }

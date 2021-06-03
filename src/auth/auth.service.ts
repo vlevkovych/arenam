@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
@@ -9,6 +9,7 @@ import { signupInputValidationSchema } from './validation/signup.input.validatio
 
 import type { JwtDto } from './dto/jwt.dto';
 import type { LoginInput } from './dto/login.input';
+import type { LoginPayload } from './dto/login.payload';
 import type { SignupInput } from './dto/signup.input';
 import type { SignupPayload } from './dto/signup.payload';
 import type { User } from '@prisma/client';
@@ -27,21 +28,34 @@ export class AuthService {
         return bcrypt.compare(password, hashedPassword);
     }
 
-    public async login(input: LoginInput): Promise<string> {
+    public async login(input: LoginInput): Promise<LoginPayload> {
         const foundUser = await this.prisma.user.findUnique({
             where: { emailAddress: input.emailAddress },
         });
+        const validationErrorPayload = {
+            errors: [
+                {
+                    field: ['emailAddress', 'password'],
+                    message: 'Wrong email or password',
+                },
+            ],
+            isLoginSuccessful: false,
+        };
         if (!foundUser) {
-            throw new BadRequestException('Wrong email or password');
+            return validationErrorPayload;
         }
         const passwordValid = await AuthService.validate(
             input.password,
             foundUser.password,
         );
         if (!passwordValid) {
-            throw new BadRequestException('Wrong email or password');
+            return validationErrorPayload;
         }
-        return `You are logged in, your token: ${this.signToken(foundUser.id)}`;
+        return {
+            errors: [],
+            isLoginSuccessful: true,
+            jwtToken: this.signToken(foundUser.id),
+        };
     }
 
     public async register(input: SignupInput): Promise<SignupPayload> {
@@ -87,7 +101,6 @@ export class AuthService {
         try {
             await signupInputValidationSchema.validateAsync(input);
         } catch (error: unknown) {
-            Logger.log(error);
             if (error instanceof ValidationError) {
                 return {
                     errors: [

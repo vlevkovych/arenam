@@ -11,7 +11,7 @@ import { UserModule } from './user/user.module';
     imports: [
         AppConfigModule,
         GraphQLModule.forRoot({
-            autoSchemaFile: true,
+            autoSchemaFile: 'schema.gql',
         }),
         UserModule,
         AuthModule,

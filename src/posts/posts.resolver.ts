@@ -12,6 +12,7 @@ import {
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { GqlAnonymousGuard } from '../auth/guards/gql-anonymous.guard';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
+import { RatingStatus } from '../common/graphql/enums/rating-status.enum';
 import { User } from '../user/user.models';
 
 import { CreatePostInput } from './dto/create-post.input';
@@ -21,7 +22,7 @@ import { RatePostPayload } from './dto/rate-post.payload';
 import { UpdatePostInput } from './dto/update-post.input';
 import { UpdatePostPayload } from './dto/update-post.payload';
 import PostsLoaders from './posts.loader';
-import { Post, RatingStatus } from './posts.models';
+import { Post } from './posts.models';
 import { PostsService } from './posts.service';
 
 @Resolver(() => Post)

@@ -29,10 +29,16 @@ export class Comment {
     public createdAt!: Date;
 
     @Field(() => Post, { nullable: true })
-    public post?: Post;
+    public post?: Post | null;
+
+    @Field(() => Int, { nullable: true })
+    public postId!: number | null;
 
     @Field(() => Comment, { nullable: true })
-    public repliedTo?: Comment;
+    public repliedTo?: Comment | null;
+
+    @Field(() => Int, { nullable: true })
+    public repliedToId!: number | null;
 
     @Field(() => [Comment])
     public replies?: Comment[];

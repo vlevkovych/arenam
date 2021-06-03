@@ -61,4 +61,14 @@ export class CommentsService {
             },
         });
     }
+
+    public async getCommentsByIds(keys: readonly number[]): Promise<Comment[]> {
+        return this.prisma.comment.findMany({
+            where: {
+                id: {
+                    in: [...keys],
+                },
+            },
+        });
+    }
 }

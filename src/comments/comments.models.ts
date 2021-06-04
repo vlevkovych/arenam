@@ -1,7 +1,7 @@
 import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 
-import { RatingStatus } from '../common/graphql/enums/rating-status.enum';
 import { Post } from '../posts/posts.models';
+import { RatingStatus } from '../rating/dto/rating-status.enum';
 import { User } from '../user/user.models';
 
 registerEnumType(RatingStatus, {

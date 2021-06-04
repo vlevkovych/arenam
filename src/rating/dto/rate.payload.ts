@@ -4,7 +4,7 @@ import { MutationPayload } from '../../common/graphql/interfaces/mutation-payloa
 import { UserError } from '../../common/graphql/types/user-error';
 
 @ObjectType({ implements: () => [MutationPayload] })
-export class RatePostPayload implements MutationPayload {
+export class RatePayload implements MutationPayload {
     @Field(() => [UserError])
     public errors!: UserError[];
 

@@ -24,7 +24,7 @@
         "test:cov": "jest --config test/jest-config.json --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
         "test:e2e": "jest --config ./test/jest-e2e.json",
-        "prepare": "husky install && prisma migrate dev --schema=./src/config/prisma/schema.prisma"
+        "prepare": "husky install && prisma generate --schema=./src/config/prisma/schema.prisma"
     },
     "dependencies": {
         "@nestjs/common": "^7.6.15",

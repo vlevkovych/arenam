@@ -8,6 +8,9 @@ export const validationSchema = Joi.object({
     [EnvironmentVariables.dbUsername]: Joi.string().required(),
     [EnvironmentVariables.dbPassword]: Joi.string().required(),
     [EnvironmentVariables.dbDatabaseName]: Joi.string().required(),
+    [EnvironmentVariables.dbHost]: Joi.string().required(),
+    [EnvironmentVariables.dbPort]: Joi.string().required(),
+    [EnvironmentVariables.dbSchema]: Joi.string().required(),
     [EnvironmentVariables.dbUrl]: Joi.string().required(),
     [EnvironmentVariables.jwtSecret]: Joi.string().required(),
 });

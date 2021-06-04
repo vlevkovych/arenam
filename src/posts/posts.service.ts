@@ -1,12 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { RatingStatus } from '@prisma/client';
 
 import { PrismaService } from '../config/prisma/prisma.service';
 
 import type { CreatePostInput } from './dto/create-post.input';
 import type { CreatePostPayload } from './dto/create-post.payload';
 import type { DeletePostPayload } from './dto/delete-post.payload';
-import type { RatePostPayload } from './dto/rate-post.payload';
 import type { UpdatePostInput } from './dto/update-post.input';
 import type { UpdatePostPayload } from './dto/update-post.payload';
 import type { Post } from './posts.models';
@@ -112,117 +110,12 @@ export class PostsService {
         return this.prisma.post.findMany();
     }
 
-    public async changeRatingStatus(
-        postId: number,
-        userId: number,
-        ratingStatus: RatingStatus,
-    ): Promise<RatePostPayload> {
-        const previousStatus = await this.prisma.postRating.findUnique({
-            select: {
-                rating: true,
-            },
-            where: {
-                UserAndPostIds: {
-                    postId,
-                    userId,
-                },
-            },
-        });
-        if (previousStatus && previousStatus.rating === ratingStatus) {
-            return {
-                errors: [],
-                isRateSuccessful: true,
-            };
-        }
-        if (previousStatus === null) {
-            await this.changePostRating(
-                postId,
-                RatingStatus.neutral,
-                ratingStatus,
-            );
-        } else {
-            await this.changePostRating(
-                postId,
-                previousStatus.rating,
-                ratingStatus,
-            );
-        }
-        await this.prisma.postRating.upsert({
-            create: {
-                postId,
-                rating: ratingStatus,
-                userId,
-            },
-            update: { rating: ratingStatus },
-            where: { UserAndPostIds: { postId, userId } },
-        });
-        return {
-            errors: [],
-            isRateSuccessful: true,
-        };
-    }
-
-    public async getMyRatingStatus(
-        postId: number,
-        userId: number,
-    ): Promise<RatingStatus> {
-        const rating = await this.prisma.postRating.findFirst({
-            select: {
-                rating: true,
-            },
-            where: {
-                postId,
-                userId,
-            },
-        });
-        if (rating) {
-            return rating.rating;
-        }
-        return RatingStatus.neutral;
-    }
-
     public async getPostsByIds(keys: readonly number[]): Promise<Post[]> {
         return this.prisma.post.findMany({
             where: {
                 id: {
                     in: [...keys],
                 },
-            },
-        });
-    }
-
-    private async changePostRating(
-        postId: number,
-        previousStatus: RatingStatus,
-        newStatus: RatingStatus,
-    ): Promise<void> {
-        let incrementRating = -1;
-        if (
-            previousStatus === RatingStatus.upvoted &&
-            newStatus === RatingStatus.downvoted
-        ) {
-            incrementRating = -2;
-        } else if (
-            previousStatus === RatingStatus.downvoted &&
-            newStatus === RatingStatus.upvoted
-        ) {
-            incrementRating = 2;
-        } else if (
-            (previousStatus === RatingStatus.downvoted &&
-                newStatus === RatingStatus.neutral) ||
-            (previousStatus === RatingStatus.neutral &&
-                newStatus === RatingStatus.upvoted)
-        ) {
-            incrementRating = 1;
-        }
-        await this.prisma.post.update({
-            data: {
-                rating: {
-                    increment: incrementRating,
-                },
-            },
-            where: {
-                id: postId,
             },
         });
     }

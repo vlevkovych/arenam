@@ -11,14 +11,15 @@ generator client {
 }
 
 model User {
-  id           Int          @id @default(autoincrement())
-  name         String       @db.VarChar
-  signupDate   DateTime     @default(now()) @db.Timestamp(6)
-  emailAddress String       @unique @db.VarChar
-  password     String       @db.VarChar
-  posts        Post[]
-  postsRatings PostRating[]
-  comments     Comment[]
+  id            Int             @id @default(autoincrement())
+  name          String          @db.VarChar
+  signupDate    DateTime        @default(now()) @db.Timestamp(6)
+  emailAddress  String          @unique @db.VarChar
+  password      String          @db.VarChar
+  posts         Post[]
+  postsRatings  PostRating[]
+  comments      Comment[]
+  CommentRating CommentRating[]
 }
 
 model Post {
@@ -34,17 +35,18 @@ model Post {
 }
 
 model Comment {
-  id          Int       @id @default(autoincrement())
-  text        String    @db.VarChar
-  rating      Int       @default(0)
-  createdAt   DateTime  @default(now()) @db.Timestamp(6)
-  creatorId   Int
-  postId      Int?
-  repliedToId Int?
-  user        User      @relation(fields: [creatorId], references: [id])
-  post        Post?     @relation(fields: [postId], references: [id])
-  comment     Comment?  @relation(fields: [repliedToId], references: [id])
-  Comment     Comment[] @relation("CommentToComment")
+  id            Int             @id @default(autoincrement())
+  text          String          @db.VarChar
+  rating        Int             @default(0)
+  createdAt     DateTime        @default(now()) @db.Timestamp(6)
+  creatorId     Int
+  postId        Int?
+  repliedToId   Int?
+  user          User            @relation(fields: [creatorId], references: [id])
+  post          Post?           @relation(fields: [postId], references: [id])
+  comment       Comment?        @relation(fields: [repliedToId], references: [id])
+  Comment       Comment[]       @relation("CommentToComment")
+  CommentRating CommentRating[]
 }
 
 model PostRating {
@@ -55,6 +57,16 @@ model PostRating {
   post   Post         @relation(fields: [postId], references: [id])
 
   @@unique(fields: [userId, postId], name: "UserAndPostIds")
+}
+
+model CommentRating {
+  userId    Int
+  commentId Int
+  rating    RatingStatus
+  user      User         @relation(fields: [userId], references: [id])
+  comment   Comment      @relation(fields: [commentId], references: [id])
+
+  @@unique(fields: [userId, commentId], name: "UserAndCommentIds")
 }
 
 enum RatingStatus {

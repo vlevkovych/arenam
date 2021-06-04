@@ -68,6 +68,11 @@ type Post {
   comments: [Comment!]!
 }
 
+type RatePayload implements MutationPayload {
+  errors: [UserError!]!
+  isRateSuccessful: Boolean!
+}
+
 type CreatePostPayload implements MutationPayload {
   errors: [UserError!]!
   post: Post
@@ -76,11 +81,6 @@ type CreatePostPayload implements MutationPayload {
 type DeletePostPayload implements MutationPayload {
   errors: [UserError!]!
   isDeleteSuccessful: Boolean!
-}
-
-type RatePostPayload implements MutationPayload {
-  errors: [UserError!]!
-  isRateSuccessful: Boolean!
 }
 
 type UpdatePostPayload implements MutationPayload {
@@ -106,11 +106,14 @@ type Mutation {
   createPost(input: CreatePostInput!): CreatePostPayload!
   updatePost(input: UpdatePostInput!, id: Int!): UpdatePostPayload!
   deletePost(postId: Int!): DeletePostPayload!
-  upvotePost(postId: Int!): RatePostPayload!
-  downvotePost(postId: Int!): RatePostPayload!
-  removeRatingFromPost(postId: Int!): RatePostPayload!
+  upvotePost(postId: Int!): RatePayload!
+  downvotePost(postId: Int!): RatePayload!
+  removeRatingFromPost(postId: Int!): RatePayload!
   replyToPost(input: CreateCommentInput!, postId: Int!): NewReplyPayload!
   replyToComment(input: CreateCommentInput!, commentId: Int!): NewReplyPayload!
+  upvoteComment(commentId: Int!): RatePayload!
+  downvoteComment(commentId: Int!): RatePayload!
+  removeRatingFromComment(commentId: Int!): RatePayload!
 }
 
 input LoginInput {

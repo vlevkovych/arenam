@@ -141,7 +141,7 @@ export class PostsResolver {
         @Parent() post: Post,
         @CurrentUser() user: User | null,
     ): Promise<string> {
-        if (user !== null) {
+        if (user && Object.keys(user).length > 0) {
             const postId = post.id;
             const userId = user.id;
             return this.ratingService.getMyPostRatingStatus(postId, userId);

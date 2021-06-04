@@ -1,4 +1,4 @@
-import { Logger, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import {
     Args,
     Int,
@@ -94,6 +94,22 @@ export class CommentsResolver {
         );
     }
 
+    @ResolveField('myRatingStatus', () => RatingStatus)
+    public async getMyRatingStatus(
+        @Parent() comment: Comment,
+        @CurrentUser() user: User | null,
+    ): Promise<string> {
+        if (user && Object.keys(user).length > 0) {
+            const commentId = comment.id;
+            const userId = user.id;
+            return this.ratingService.getMyCommentRatingStatus(
+                commentId,
+                userId,
+            );
+        }
+        return RatingStatus.neutral;
+    }
+
     @ResolveField('replies', () => [Comment])
     public async replies(@Parent() comment: Comment): Promise<Comment[]> {
         const { id } = comment;
@@ -111,7 +127,6 @@ export class CommentsResolver {
         @Parent() comment: Comment,
     ): Promise<Comment | null> {
         const { repliedToId } = comment;
-        Logger.debug(repliedToId);
         if (repliedToId !== null) {
             return this.commentsLoader.batchRepliedTo.load(repliedToId);
         }

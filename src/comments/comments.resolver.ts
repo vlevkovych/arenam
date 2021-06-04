@@ -11,6 +11,9 @@ import {
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { Post } from '../posts/posts.models';
+import { RatePayload } from '../rating/dto/rate.payload';
+import { RatingStatus } from '../rating/dto/rating-status.enum';
+import { RatingService } from '../rating/rating.service';
 import { User } from '../user/user.models';
 
 import CommentsLoader from './comments.loader';
@@ -24,6 +27,7 @@ export class CommentsResolver {
     public constructor(
         private readonly commentsService: CommentsService,
         private readonly commentsLoader: CommentsLoader,
+        private readonly ratingService: RatingService,
     ) {}
 
     @Mutation(() => NewReplyPayload)
@@ -46,6 +50,48 @@ export class CommentsResolver {
     ): Promise<NewReplyPayload> {
         const userId = user.id;
         return this.commentsService.replyToComment(commentId, userId, input);
+    }
+
+    @Mutation(() => RatePayload)
+    @UseGuards(GqlAuthGuard)
+    public async upvoteComment(
+        @Args('commentId', { type: () => Int }) commentId: number,
+        @CurrentUser() user: User,
+    ): Promise<RatePayload> {
+        const userId = user.id;
+        return this.ratingService.changeCommentRatingStatus(
+            commentId,
+            userId,
+            RatingStatus.upvoted,
+        );
+    }
+
+    @Mutation(() => RatePayload)
+    @UseGuards(GqlAuthGuard)
+    public async downvoteComment(
+        @Args('commentId', { type: () => Int }) commentId: number,
+        @CurrentUser() user: User,
+    ): Promise<RatePayload> {
+        const userId = user.id;
+        return this.ratingService.changeCommentRatingStatus(
+            commentId,
+            userId,
+            RatingStatus.downvoted,
+        );
+    }
+
+    @Mutation(() => RatePayload)
+    @UseGuards(GqlAuthGuard)
+    public async removeRatingFromComment(
+        @Args('commentId', { type: () => Int }) commentId: number,
+        @CurrentUser() user: User,
+    ): Promise<RatePayload> {
+        const userId = user.id;
+        return this.ratingService.changeCommentRatingStatus(
+            commentId,
+            userId,
+            RatingStatus.neutral,
+        );
     }
 
     @ResolveField('replies', () => [Comment])

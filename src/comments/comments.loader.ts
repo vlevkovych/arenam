@@ -4,7 +4,7 @@ import * as DataLoader from 'dataloader';
 import { PostsRepository } from '../posts/posts.repository';
 import { UserService } from '../user/user.service';
 
-import { CommentsService } from './comments.service';
+import { CommentsRepository } from './comments.repository';
 
 import type { Post } from '../posts/posts.models';
 import type { User } from '../user/user.models';
@@ -18,17 +18,17 @@ export default class CommentsLoader {
 
     public readonly batchRepliedTo = new DataLoader<Comment['id'], Comment>(
         async (keys: readonly number[]) =>
-            this.commentsService.getCommentsByIds(keys),
+            this.commentsRepository.findCommentsByIds(keys),
     );
 
     public readonly batchPosts = new DataLoader<Post['id'], Post>(
         async (keys: readonly number[]) =>
-            this.postsRepository.getPostsByIds(keys),
+            this.postsRepository.findPostsByIds(keys),
     );
 
     public constructor(
         private readonly userService: UserService,
-        private readonly commentsService: CommentsService,
+        private readonly commentsRepository: CommentsRepository,
         private readonly postsRepository: PostsRepository,
     ) {}
 }

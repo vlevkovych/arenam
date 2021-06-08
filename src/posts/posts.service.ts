@@ -90,10 +90,10 @@ export class PostsService {
     }
 
     public async getUserPosts(id: number): Promise<Post[]> {
-        return this.postsRepository.getPostsByUserId(id);
+        return this.postsRepository.findPostsByUserId(id);
     }
 
     public async getPosts(): Promise<Post[]> {
-        return this.postsRepository.getPosts();
+        return this.postsRepository.findPosts();
     }
 }

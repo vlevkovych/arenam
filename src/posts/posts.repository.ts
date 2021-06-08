@@ -33,17 +33,17 @@ export class PostsRepository {
         return this.prisma.post.findFirst({ where: { creatorId, id: postId } });
     }
 
-    public async getPostsByUserId(id: number): Promise<Post[]> {
+    public async findPostsByUserId(id: number): Promise<Post[]> {
         return this.prisma.post.findMany({
             where: { creatorId: id },
         });
     }
 
-    public async getPosts(): Promise<Post[]> {
+    public async findPosts(): Promise<Post[]> {
         return this.prisma.post.findMany();
     }
 
-    public async getPostsByIds(keys: readonly number[]): Promise<Post[]> {
+    public async findPostsByIds(keys: readonly number[]): Promise<Post[]> {
         return this.prisma.post.findMany({
             where: {
                 id: {

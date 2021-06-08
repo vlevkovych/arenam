@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
 import { ValidationError } from '../common/errors/validation.error';
-import { PrismaService } from '../config/prisma/prisma.service';
+import { UserRepository } from '../user/user.repository';
 
 import { signupInputValidationSchema } from './validation/signup.input.validation';
 
@@ -17,7 +17,7 @@ import type { User } from '@prisma/client';
 @Injectable()
 export class AuthService {
     public constructor(
-        private readonly prisma: PrismaService,
+        private readonly userRepository: UserRepository,
         private readonly jwt: JwtService,
     ) {}
 
@@ -29,9 +29,9 @@ export class AuthService {
     }
 
     public async login(input: LoginInput): Promise<LoginPayload> {
-        const foundUser = await this.prisma.user.findUnique({
-            where: { emailAddress: input.emailAddress },
-        });
+        const foundUser = await this.userRepository.findUserByEmail(
+            input.emailAddress,
+        );
         const validationErrorPayload = {
             errors: [
                 {
@@ -64,11 +64,9 @@ export class AuthService {
             return validationPayload;
         }
         const hashPassword = await bcrypt.hash(input.password, 10);
-        await this.prisma.user.create({
-            data: {
-                ...input,
-                password: hashPassword,
-            },
+        await this.userRepository.createUser({
+            ...input,
+            password: hashPassword,
         });
         return {
             errors: [],
@@ -77,15 +75,15 @@ export class AuthService {
     }
 
     public async validateUser(userId: number): Promise<User | null> {
-        return this.prisma.user.findFirst({ where: { id: userId } });
+        return this.userRepository.findUserById(userId);
     }
 
     private async signupValidation(
         input: SignupInput,
     ): Promise<SignupPayload | null> {
-        const foundUser = await this.prisma.user.findFirst({
-            where: { emailAddress: input.emailAddress },
-        });
+        const foundUser = await this.userRepository.findUserByEmail(
+            input.emailAddress,
+        );
 
         if (foundUser) {
             return {

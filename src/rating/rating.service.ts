@@ -1,30 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { RatingStatus } from '@prisma/client';
 
-import { PrismaService } from '../config/prisma/prisma.service';
+import { CommentsRepository } from '../comments/comments.repository';
+import { PostsRepository } from '../posts/posts.repository';
+
+import { RatingRepository } from './rating.repository';
 
 import type { RatePayload } from './dto/rate.payload';
 
 @Injectable()
 export class RatingService {
-    public constructor(private readonly prisma: PrismaService) {}
+    public constructor(
+        private readonly ratingRepository: RatingRepository,
+        private readonly commentsRepository: CommentsRepository,
+        private readonly postsRepository: PostsRepository,
+    ) {}
 
     public async changePostRatingStatus(
         postId: number,
         userId: number,
         ratingStatus: RatingStatus,
     ): Promise<RatePayload> {
-        const previousStatus = await this.prisma.postRating.findUnique({
-            select: {
-                rating: true,
-            },
-            where: {
-                UserAndPostIds: {
-                    postId,
-                    userId,
-                },
-            },
-        });
+        const previousStatus = await this.ratingRepository.findPostRating(
+            postId,
+            userId,
+        );
         if (previousStatus && previousStatus.rating === ratingStatus) {
             return {
                 errors: [],
@@ -44,15 +44,11 @@ export class RatingService {
                 ratingStatus,
             );
         }
-        await this.prisma.postRating.upsert({
-            create: {
-                postId,
-                rating: ratingStatus,
-                userId,
-            },
-            update: { rating: ratingStatus },
-            where: { UserAndPostIds: { postId, userId } },
-        });
+        await this.ratingRepository.upsertPostRating(
+            userId,
+            postId,
+            ratingStatus,
+        );
         return {
             errors: [],
             isRateSuccessful: true,
@@ -64,17 +60,10 @@ export class RatingService {
         userId: number,
         ratingStatus: RatingStatus,
     ): Promise<RatePayload> {
-        const previousStatus = await this.prisma.commentRating.findUnique({
-            select: {
-                rating: true,
-            },
-            where: {
-                UserAndCommentIds: {
-                    commentId,
-                    userId,
-                },
-            },
-        });
+        const previousStatus = await this.ratingRepository.findCommentRating(
+            userId,
+            commentId,
+        );
         if (previousStatus && previousStatus.rating === ratingStatus) {
             return {
                 errors: [],
@@ -94,15 +83,11 @@ export class RatingService {
                 ratingStatus,
             );
         }
-        await this.prisma.commentRating.upsert({
-            create: {
-                commentId,
-                rating: ratingStatus,
-                userId,
-            },
-            update: { rating: ratingStatus },
-            where: { UserAndCommentIds: { commentId, userId } },
-        });
+        await this.ratingRepository.upsertCommentRating(
+            userId,
+            commentId,
+            ratingStatus,
+        );
         return {
             errors: [],
             isRateSuccessful: true,
@@ -113,15 +98,10 @@ export class RatingService {
         postId: number,
         userId: number,
     ): Promise<RatingStatus> {
-        const rating = await this.prisma.postRating.findFirst({
-            select: {
-                rating: true,
-            },
-            where: {
-                postId,
-                userId,
-            },
-        });
+        const rating = await this.ratingRepository.findPostRating(
+            postId,
+            userId,
+        );
         if (rating) {
             return rating.rating;
         }
@@ -132,15 +112,10 @@ export class RatingService {
         commentId: number,
         userId: number,
     ): Promise<RatingStatus> {
-        const rating = await this.prisma.commentRating.findFirst({
-            select: {
-                rating: true,
-            },
-            where: {
-                commentId,
-                userId,
-            },
-        });
+        const rating = await this.ratingRepository.findCommentRating(
+            commentId,
+            userId,
+        );
         if (rating) {
             return rating.rating;
         }
@@ -156,16 +131,8 @@ export class RatingService {
             previousStatus,
             newStatus,
         );
-        await this.prisma.post.update({
-            data: {
-                rating: {
-                    increment: incrementRating,
-                },
-            },
-            where: {
-                id: postId,
-            },
-        });
+
+        await this.postsRepository.incrementRatingById(postId, incrementRating);
     }
 
     private async changeCommentRating(
@@ -177,37 +144,27 @@ export class RatingService {
             previousStatus,
             newStatus,
         );
-        await this.prisma.comment.update({
-            data: {
-                rating: {
-                    increment: incrementRating,
-                },
-            },
-            where: {
-                id: commentId,
-            },
-        });
+
+        await this.commentsRepository.incrementRatingById(
+            commentId,
+            incrementRating,
+        );
     }
 
     private getRatingIncrement(
         previousStatus: RatingStatus,
         newStatus: RatingStatus,
     ): number {
-        if (
-            previousStatus === RatingStatus.upvoted &&
-            newStatus === RatingStatus.downvoted
-        ) {
+        const { upvoted } = RatingStatus;
+        const { downvoted } = RatingStatus;
+        const { neutral } = RatingStatus;
+        if (previousStatus === upvoted && newStatus === downvoted) {
             return -2;
-        } else if (
-            previousStatus === RatingStatus.downvoted &&
-            newStatus === RatingStatus.upvoted
-        ) {
+        } else if (previousStatus === downvoted && newStatus === upvoted) {
             return 2;
         } else if (
-            (previousStatus === RatingStatus.downvoted &&
-                newStatus === RatingStatus.neutral) ||
-            (previousStatus === RatingStatus.neutral &&
-                newStatus === RatingStatus.upvoted)
+            (previousStatus === downvoted && newStatus === neutral) ||
+            (previousStatus === neutral && newStatus === upvoted)
         ) {
             return 1;
         }

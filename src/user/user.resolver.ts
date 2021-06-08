@@ -40,6 +40,6 @@ export class UserResolver {
 
     @ResolveField('posts', () => [Post])
     public async getUserPosts(@Parent() user: User): Promise<Post[]> {
-        return this.postsService.getPostsByUserId(user.id);
+        return this.postsService.getUserPosts(user.id);
     }
 }

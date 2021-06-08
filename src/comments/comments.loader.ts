@@ -1,10 +1,10 @@
 import { Injectable, Scope } from '@nestjs/common';
 import * as DataLoader from 'dataloader';
 
-import { PostsService } from '../posts/posts.service';
-import { UserService } from '../user/user.service';
+import { PostsRepository } from '../posts/posts.repository';
+import { UserRepository } from '../user/user.repository';
 
-import { CommentsService } from './comments.service';
+import { CommentsRepository } from './comments.repository';
 
 import type { Post } from '../posts/posts.models';
 import type { User } from '../user/user.models';
@@ -13,22 +13,23 @@ import type { Comment } from './comments.models';
 @Injectable({ scope: Scope.REQUEST })
 export default class CommentsLoader {
     public readonly batchCreators = new DataLoader<User['id'], User>(
-        async (keys: readonly number[]) => this.userService.getUsersByIds(keys),
+        async (keys: readonly number[]) =>
+            this.userRepository.findUsersByIds(keys),
     );
 
     public readonly batchRepliedTo = new DataLoader<Comment['id'], Comment>(
         async (keys: readonly number[]) =>
-            this.commentsService.getCommentsByIds(keys),
+            this.commentsRepository.findCommentsByIds(keys),
     );
 
     public readonly batchPosts = new DataLoader<Post['id'], Post>(
         async (keys: readonly number[]) =>
-            this.postsService.getPostsByIds(keys),
+            this.postsRepository.findPostsByIds(keys),
     );
 
     public constructor(
-        private readonly userService: UserService,
-        private readonly commentsService: CommentsService,
-        private readonly postsService: PostsService,
+        private readonly userRepository: UserRepository,
+        private readonly commentsRepository: CommentsRepository,
+        private readonly postsRepository: PostsRepository,
     ) {}
 }

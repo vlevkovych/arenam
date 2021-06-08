@@ -10,5 +10,5 @@ export class UpdatePostPayload implements MutationPayload {
     public errors!: UserError[];
 
     @Field(() => Post, { nullable: true })
-    public post?: Post;
+    public post?: Post | null;
 }

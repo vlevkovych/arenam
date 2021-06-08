@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { PrismaService } from '../config/prisma/prisma.service';
+import { PostsRepository } from './posts.repository';
 
 import type { CreatePostInput } from './dto/create-post.input';
 import type { CreatePostPayload } from './dto/create-post.payload';
@@ -11,10 +11,10 @@ import type { Post } from './posts.models';
 
 @Injectable()
 export class PostsService {
-    public constructor(private readonly prisma: PrismaService) {}
+    public constructor(private readonly postsRepository: PostsRepository) {}
 
     public async getPostById(id: number): Promise<Post> {
-        const post = await this.prisma.post.findFirst({ where: { id } });
+        const post = await this.postsRepository.findPostById(id);
         if (!post) {
             throw new NotFoundException('Post not found');
         }
@@ -25,12 +25,7 @@ export class PostsService {
         input: CreatePostInput,
         creatorId: number,
     ): Promise<CreatePostPayload> {
-        const post = await this.prisma.post.create({
-            data: {
-                ...input,
-                creatorId,
-            },
-        });
+        const post = await this.postsRepository.createPost(input, creatorId);
         return {
             errors: [],
             post,
@@ -42,12 +37,10 @@ export class PostsService {
         input: UpdatePostInput,
         creatorId: number,
     ): Promise<UpdatePostPayload> {
-        const post = await this.prisma.post.findFirst({
-            where: {
-                creatorId,
-                id: postId,
-            },
-        });
+        const post = await this.postsRepository.findPostByCreatorId(
+            creatorId,
+            postId,
+        );
         if (!post) {
             return {
                 errors: [
@@ -59,12 +52,10 @@ export class PostsService {
                 ],
             };
         }
-        const updatedPost = await this.prisma.post.update({
-            data: input,
-            where: {
-                id: postId,
-            },
-        });
+        const updatedPost = await this.postsRepository.updatePost(
+            postId,
+            input,
+        );
         return {
             errors: [],
             post: updatedPost,
@@ -75,12 +66,10 @@ export class PostsService {
         postId: number,
         userId: number,
     ): Promise<DeletePostPayload> {
-        const post = await this.prisma.post.findFirst({
-            where: {
-                creatorId: userId,
-                id: postId,
-            },
-        });
+        const post = await this.postsRepository.findPostByCreatorId(
+            userId,
+            postId,
+        );
         if (!post) {
             return {
                 errors: [
@@ -93,30 +82,18 @@ export class PostsService {
                 isDeleteSuccessful: false,
             };
         }
-        await this.prisma.post.delete({ where: { id: post.id } });
+        await this.postsRepository.deletePostById(post.id);
         return {
             errors: [],
             isDeleteSuccessful: true,
         };
     }
 
-    public async getPostsByUserId(id: number): Promise<Post[]> {
-        return this.prisma.post.findMany({
-            where: { creatorId: id },
-        });
+    public async getUserPosts(id: number): Promise<Post[]> {
+        return this.postsRepository.getPostsByUserId(id);
     }
 
     public async getPosts(): Promise<Post[]> {
-        return this.prisma.post.findMany();
-    }
-
-    public async getPostsByIds(keys: readonly number[]): Promise<Post[]> {
-        return this.prisma.post.findMany({
-            where: {
-                id: {
-                    in: [...keys],
-                },
-            },
-        });
+        return this.postsRepository.getPosts();
     }
 }

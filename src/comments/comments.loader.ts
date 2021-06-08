@@ -1,7 +1,7 @@
 import { Injectable, Scope } from '@nestjs/common';
 import * as DataLoader from 'dataloader';
 
-import { PostsService } from '../posts/posts.service';
+import { PostsRepository } from '../posts/posts.repository';
 import { UserService } from '../user/user.service';
 
 import { CommentsService } from './comments.service';
@@ -23,12 +23,12 @@ export default class CommentsLoader {
 
     public readonly batchPosts = new DataLoader<Post['id'], Post>(
         async (keys: readonly number[]) =>
-            this.postsService.getPostsByIds(keys),
+            this.postsRepository.getPostsByIds(keys),
     );
 
     public constructor(
         private readonly userService: UserService,
         private readonly commentsService: CommentsService,
-        private readonly postsService: PostsService,
+        private readonly postsRepository: PostsRepository,
     ) {}
 }

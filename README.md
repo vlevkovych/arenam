@@ -2,7 +2,7 @@
 
 1. Clone the repo from git:
 
-   `git@github.com:vlevkovych/Learning-NodeJS.git`
+   `git@github.com:vlevkovych/arenam.git`
 
 2. `cd` to the folder you cloned the repo in (by default `arenam`):
 
@@ -14,11 +14,11 @@
 
 4. Build docker container:
 
-   `npm run docker:build`
+   `sudo docker-compose build`
 
 5. Start server:
 
-   `npm run docker:up`
+   `sudo docker-compose up`
 
 6. Temporary replace the `DB_HOST` `postgres` with `localhost` in `.env` to perform Prisma migrations
 

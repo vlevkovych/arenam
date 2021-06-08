@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 
 import { EnvironmentVariables } from '../config/app/env.type';
 import { PrismaModule } from '../config/prisma/prisma.module';
+import { UserModule } from '../user/user.module';
 
 import { AuthResolver } from './auth.resolver';
 import { AuthService } from './auth.service';
@@ -17,6 +18,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
         JwtModule.register({
             secret: EnvironmentVariables.jwtSecret,
         }),
+        forwardRef(() => UserModule),
     ],
     providers: [
         AuthService,

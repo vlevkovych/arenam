@@ -2,26 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type UserError {
-  message: String!
-  field: [String!]
-}
-
-type LoginPayload implements MutationPayload {
-  errors: [UserError!]!
-  isLoginSuccessful: Boolean!
-  jwtToken: String
-}
-
-interface MutationPayload {
-  errors: [UserError!]!
-}
-
-type SignupPayload implements MutationPayload {
-  errors: [UserError!]!
-  isSignupSuccessful: Boolean!
-}
-
 type User {
   id: ID!
   name: String!
@@ -68,9 +48,23 @@ type Post {
   comments: [Comment!]!
 }
 
+type UserError {
+  message: String!
+  field: [String!]
+}
+
 type RatePayload implements MutationPayload {
   errors: [UserError!]!
   isRateSuccessful: Boolean!
+}
+
+interface MutationPayload {
+  errors: [UserError!]!
+}
+
+type NewReplyPayload implements MutationPayload {
+  errors: [UserError!]!
+  comment: Comment
 }
 
 type CreatePostPayload implements MutationPayload {
@@ -88,9 +82,15 @@ type UpdatePostPayload implements MutationPayload {
   post: Post
 }
 
-type NewReplyPayload implements MutationPayload {
+type LoginPayload implements MutationPayload {
   errors: [UserError!]!
-  comment: Comment
+  isLoginSuccessful: Boolean!
+  jwtToken: String
+}
+
+type SignupPayload implements MutationPayload {
+  errors: [UserError!]!
+  isSignupSuccessful: Boolean!
 }
 
 type Query {

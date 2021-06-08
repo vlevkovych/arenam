@@ -14,7 +14,7 @@ import { CommentsService } from './comments.service';
     exports: [CommentsService, CommentsRepository],
     imports: [
         PrismaModule,
-        UserModule,
+        forwardRef(() => UserModule),
         forwardRef(() => RatingModule),
         forwardRef(() => PostsModule),
     ],

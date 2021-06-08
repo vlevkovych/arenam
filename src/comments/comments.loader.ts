@@ -2,7 +2,7 @@ import { Injectable, Scope } from '@nestjs/common';
 import * as DataLoader from 'dataloader';
 
 import { PostsRepository } from '../posts/posts.repository';
-import { UserService } from '../user/user.service';
+import { UserRepository } from '../user/user.repository';
 
 import { CommentsRepository } from './comments.repository';
 
@@ -13,7 +13,8 @@ import type { Comment } from './comments.models';
 @Injectable({ scope: Scope.REQUEST })
 export default class CommentsLoader {
     public readonly batchCreators = new DataLoader<User['id'], User>(
-        async (keys: readonly number[]) => this.userService.getUsersByIds(keys),
+        async (keys: readonly number[]) =>
+            this.userRepository.findUsersByIds(keys),
     );
 
     public readonly batchRepliedTo = new DataLoader<Comment['id'], Comment>(
@@ -27,7 +28,7 @@ export default class CommentsLoader {
     );
 
     public constructor(
-        private readonly userService: UserService,
+        private readonly userRepository: UserRepository,
         private readonly commentsRepository: CommentsRepository,
         private readonly postsRepository: PostsRepository,
     ) {}

@@ -13,15 +13,15 @@ generator client {
 
 
 model User {
-  id            Int             @id @default(autoincrement())
-  name          String          @db.VarChar
-  signupDate    DateTime        @default(now()) @db.Timestamp(6)
-  emailAddress  String          @unique @db.VarChar
-  password      String          @db.VarChar
-  posts         Post[]
-  postsRatings  PostRating[]
-  comments      Comment[]
-  CommentRating CommentRating[]
+  id              Int             @id @default(autoincrement())
+  name            String          @db.VarChar
+  signupDate      DateTime        @default(now()) @db.Timestamp(6)
+  emailAddress    String          @unique @db.VarChar
+  password        String          @db.VarChar
+  posts           Post[]
+  postsRatings    PostRating[]
+  comments        Comment[]
+  commentsRatings CommentRating[]
 }
 
 model Post {
@@ -29,9 +29,9 @@ model Post {
   title        String       @db.VarChar
   body         String       @db.VarChar
   creatorId    Int
+  creator      User         @relation(fields: [creatorId], references: [id])
   rating       Int          @default(0)
   createdAt    DateTime     @default(now()) @db.Timestamp(6)
-  creator      User         @relation(fields: [creatorId], references: [id])
   postsRatings PostRating[]
   comments     Comment[]
 }
@@ -44,11 +44,11 @@ model Comment {
   creatorId     Int
   postId        Int?
   repliedToId   Int?
+  CommentRating CommentRating[]
   user          User            @relation(fields: [creatorId], references: [id])
   post          Post?           @relation(fields: [postId], references: [id])
-  comment       Comment?        @relation(fields: [repliedToId], references: [id])
-  Comment       Comment[]       @relation("CommentToComment")
-  CommentRating CommentRating[]
+  parentComment Comment?        @relation(name: "CommentToComment", fields: [repliedToId], references: [id])
+  comments      Comment[]       @relation(name: "CommentToComment")
 }
 
 model PostRating {

@@ -9,11 +9,12 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 
 const bootstrap: () => Promise<void> = async () => {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
     const appConfigService: AppConfigService = app.get('AppConfigService');
-    await app.listen(
-        appConfigService.get(EnvironmentVariables.port),
-        appConfigService.get(EnvironmentVariables.host),
-    );
+    const PORT = appConfigService.get(EnvironmentVariables.port);
+    const HOST = appConfigService.get(EnvironmentVariables.host);
+
+    await app.listen(PORT, HOST);
 };
 
 bootstrap().catch((error: Readonly<Error>) => {

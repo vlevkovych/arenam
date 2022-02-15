@@ -4,6 +4,6 @@ import { UserError } from '../types/user-error';
 
 @InterfaceType()
 export abstract class MutationPayload {
-    @Field(() => [UserError])
-    public errors!: UserError[];
+    @Field(() => [UserError], { nullable: true })
+    public errors?: UserError[] | undefined;
 }

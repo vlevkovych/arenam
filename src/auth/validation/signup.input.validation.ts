@@ -1,30 +1,17 @@
 import * as Joi from 'joi';
 
-import { ValidationError } from '../../common/errors/validation.error';
-
 export const signupInputValidationSchema = Joi.object({
-    emailAddress: Joi.string()
-        .email()
-        .required()
-        .error(() => new ValidationError('Invalid Email', 'emailAddress')),
-    name: Joi.string()
-        .min(2)
-        .required()
-        .error(
-            () =>
-                new ValidationError(
-                    'Name length must be at least 2 characters long',
-                    'name',
-                ),
-        ),
-    password: Joi.string()
-        .min(5)
-        .required()
-        .error(
-            () =>
-                new ValidationError(
-                    'Password length must be at least 5 characters long',
-                    'password',
-                ),
-        ),
+    emailAddress: Joi.string().min(2).email().required().messages({
+        'string.email': 'Invalid Email',
+        'string.min': 'Email length must be at least 2 characters long',
+        'string.required': "Field 'email' is required",
+    }),
+    name: Joi.string().min(2).required().messages({
+        'string.min': 'Name length must be at least 2 characters long',
+        'string.required': "Field 'name' is required",
+    }),
+    password: Joi.string().min(5).required().messages({
+        'string.min': 'Password length must be at least 5 characters long',
+        'string.required': "Field 'password' is required",
+    }),
 });

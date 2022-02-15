@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { ValidationError } from 'joi';
 
-import { ValidationError } from '../common/errors/validation.error';
+import { transformValidationError } from '../common/helpers/ValidationErrorTransformer';
 import { UserRepository } from '../user/user.repository';
 
 import { signupInputValidationSchema } from './validation/signup.input.validation';
@@ -29,32 +30,38 @@ export class AuthService {
     }
 
     public async login(input: LoginInput): Promise<LoginPayload> {
-        const foundUser = await this.userRepository.findUserByEmail(
-            input.emailAddress,
-        );
-        const validationErrorPayload = {
+        const validationErrorPayload: LoginPayload = {
             errors: [
                 {
-                    field: ['emailAddress', 'password'],
+                    field: 'emailAddress',
+                    message: 'Wrong email or password',
+                },
+                {
+                    field: 'password',
                     message: 'Wrong email or password',
                 },
             ],
             isLoginSuccessful: false,
         };
-        if (!foundUser) {
-            return validationErrorPayload;
-        }
-        const passwordValid = await AuthService.validate(
-            input.password,
-            foundUser.password,
+
+        const user = await this.userRepository.findUserByEmail(
+            input.emailAddress,
         );
-        if (!passwordValid) {
+        if (!user) {
             return validationErrorPayload;
         }
+
+        const isPasswordCorrect = await AuthService.validate(
+            input.password,
+            user.password,
+        );
+        if (!isPasswordCorrect) {
+            return validationErrorPayload;
+        }
+
         return {
-            errors: [],
             isLoginSuccessful: true,
-            jwtToken: this.signToken(foundUser.id),
+            jwtToken: this.signToken(user.id),
         };
     }
 
@@ -63,13 +70,13 @@ export class AuthService {
         if (validationPayload !== null) {
             return validationPayload;
         }
+
         const hashPassword = await bcrypt.hash(input.password, 10);
         await this.userRepository.createUser({
             ...input,
             password: hashPassword,
         });
         return {
-            errors: [],
             isSignupSuccessful: true,
         };
     }
@@ -81,15 +88,15 @@ export class AuthService {
     private async signupValidation(
         input: SignupInput,
     ): Promise<SignupPayload | null> {
-        const foundUser = await this.userRepository.findUserByEmail(
+        const user = await this.userRepository.findUserByEmail(
             input.emailAddress,
         );
 
-        if (foundUser) {
+        if (user) {
             return {
                 errors: [
                     {
-                        field: ['emailAddress'],
+                        field: 'emailAddress',
                         message: 'User with same email is already exist',
                     },
                 ],
@@ -97,16 +104,14 @@ export class AuthService {
             };
         }
         try {
-            await signupInputValidationSchema.validateAsync(input);
+            await signupInputValidationSchema.validateAsync(input, {
+                abortEarly: false,
+            });
         } catch (error: unknown) {
             if (error instanceof ValidationError) {
+                const errors = transformValidationError(error);
                 return {
-                    errors: [
-                        {
-                            field: [error.fieldName],
-                            message: error.message,
-                        },
-                    ],
+                    errors,
                     isSignupSuccessful: false,
                 };
             }

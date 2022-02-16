@@ -32,6 +32,13 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# App
+#Husky
 /.husky/_
+/.husky/.gitignore
+
+#Prisma
+/src/config/prisma/migrations/*
+!/src/config/prisma/migrations/migration_lock.toml
+
+#ENV file
 .env

@@ -5,7 +5,7 @@ services:
     container_name: main
     build:
       context: .
-      target: development
+      dockerfile: Dockerfile
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules

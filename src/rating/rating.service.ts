@@ -16,6 +16,30 @@ export class RatingService {
         private readonly postsRepository: PostsRepository,
     ) {}
 
+    private static getRatingIncrement(
+        previousStatus: RatingStatus,
+        newStatus: RatingStatus,
+    ): number {
+        const { upvoted, downvoted, neutral } = RatingStatus;
+
+        if (previousStatus === upvoted && newStatus === downvoted) {
+            return -2;
+        }
+
+        if (previousStatus === downvoted && newStatus === upvoted) {
+            return 2;
+        }
+
+        if (
+            (previousStatus === downvoted && newStatus === neutral) ||
+            (previousStatus === neutral && newStatus === upvoted)
+        ) {
+            return 1;
+        }
+
+        return -1;
+    }
+
     public async changePostRatingStatus(
         postId: number,
         userId: number,
@@ -27,7 +51,6 @@ export class RatingService {
         );
         if (previousStatus && previousStatus.rating === ratingStatus) {
             return {
-                errors: [],
                 isRateSuccessful: true,
             };
         }
@@ -50,7 +73,6 @@ export class RatingService {
             ratingStatus,
         );
         return {
-            errors: [],
             isRateSuccessful: true,
         };
     }
@@ -66,7 +88,6 @@ export class RatingService {
         );
         if (previousStatus && previousStatus.rating === ratingStatus) {
             return {
-                errors: [],
                 isRateSuccessful: true,
             };
         }
@@ -89,7 +110,6 @@ export class RatingService {
             ratingStatus,
         );
         return {
-            errors: [],
             isRateSuccessful: true,
         };
     }
@@ -127,7 +147,7 @@ export class RatingService {
         previousStatus: RatingStatus,
         newStatus: RatingStatus,
     ): Promise<void> {
-        const incrementRating = this.getRatingIncrement(
+        const incrementRating = RatingService.getRatingIncrement(
             previousStatus,
             newStatus,
         );
@@ -140,7 +160,7 @@ export class RatingService {
         previousStatus: RatingStatus,
         newStatus: RatingStatus,
     ): Promise<void> {
-        const incrementRating = this.getRatingIncrement(
+        const incrementRating = RatingService.getRatingIncrement(
             previousStatus,
             newStatus,
         );
@@ -149,25 +169,5 @@ export class RatingService {
             commentId,
             incrementRating,
         );
-    }
-
-    private getRatingIncrement(
-        previousStatus: RatingStatus,
-        newStatus: RatingStatus,
-    ): number {
-        const { upvoted } = RatingStatus;
-        const { downvoted } = RatingStatus;
-        const { neutral } = RatingStatus;
-        if (previousStatus === upvoted && newStatus === downvoted) {
-            return -2;
-        } else if (previousStatus === downvoted && newStatus === upvoted) {
-            return 2;
-        } else if (
-            (previousStatus === downvoted && newStatus === neutral) ||
-            (previousStatus === neutral && newStatus === upvoted)
-        ) {
-            return 1;
-        }
-        return -1;
     }
 }

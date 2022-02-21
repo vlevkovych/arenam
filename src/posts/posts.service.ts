@@ -27,7 +27,6 @@ export class PostsService {
     ): Promise<CreatePostPayload> {
         const post = await this.postsRepository.createPost(input, creatorId);
         return {
-            errors: [],
             post,
         };
     }
@@ -45,7 +44,6 @@ export class PostsService {
             return {
                 errors: [
                     {
-                        field: [],
                         message:
                             'Post does not exist or you are not the author',
                     },
@@ -57,7 +55,6 @@ export class PostsService {
             input,
         );
         return {
-            errors: [],
             post: updatedPost,
         };
     }
@@ -74,7 +71,6 @@ export class PostsService {
             return {
                 errors: [
                     {
-                        field: [],
                         message:
                             'Post does not exist or you are not the author',
                     },
@@ -84,7 +80,6 @@ export class PostsService {
         }
         await this.postsRepository.deletePostById(post.id);
         return {
-            errors: [],
             isDeleteSuccessful: true,
         };
     }

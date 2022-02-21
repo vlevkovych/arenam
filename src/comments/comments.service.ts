@@ -23,10 +23,7 @@ export class CommentsService {
             postId,
             text,
         );
-        return {
-            comment,
-            errors: [],
-        };
+        return { comment };
     }
 
     public async replyToComment(
@@ -40,10 +37,7 @@ export class CommentsService {
             commentId,
             text,
         );
-        return {
-            comment,
-            errors: [],
-        };
+        return { comment };
     }
 
     public async getCommentsByPostId(postId: number): Promise<Comment[]> {

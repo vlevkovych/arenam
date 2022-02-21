@@ -6,8 +6,8 @@ import { Comment } from '../comments.models';
 
 @ObjectType({ implements: () => [MutationPayload] })
 export class NewReplyPayload implements MutationPayload {
-    @Field(() => [UserError])
-    public errors!: UserError[];
+    @Field(() => [UserError], { nullable: true })
+    public errors?: UserError[] | undefined;
 
     @Field(() => Comment, { nullable: true })
     public comment?: Comment;

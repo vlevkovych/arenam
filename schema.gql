@@ -50,46 +50,46 @@ type Post {
 
 type UserError {
   message: String!
-  field: [String!]
+  field: String
 }
 
 type RatePayload implements MutationPayload {
-  errors: [UserError!]!
+  errors: [UserError!]
   isRateSuccessful: Boolean!
 }
 
 interface MutationPayload {
-  errors: [UserError!]!
+  errors: [UserError!]
 }
 
 type NewReplyPayload implements MutationPayload {
-  errors: [UserError!]!
+  errors: [UserError!]
   comment: Comment
 }
 
 type CreatePostPayload implements MutationPayload {
-  errors: [UserError!]!
+  errors: [UserError!]
   post: Post
 }
 
 type DeletePostPayload implements MutationPayload {
-  errors: [UserError!]!
+  errors: [UserError!]
   isDeleteSuccessful: Boolean!
 }
 
 type UpdatePostPayload implements MutationPayload {
-  errors: [UserError!]!
+  errors: [UserError!]
   post: Post
 }
 
 type LoginPayload implements MutationPayload {
-  errors: [UserError!]!
+  errors: [UserError!]
   isLoginSuccessful: Boolean!
   jwtToken: String
 }
 
 type SignupPayload implements MutationPayload {
-  errors: [UserError!]!
+  errors: [UserError!]
   isSignupSuccessful: Boolean!
 }
 

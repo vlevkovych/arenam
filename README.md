@@ -20,7 +20,7 @@
 
    `sudo docker-compose up`
 
-6. Temporary replace the `DB_HOST` `postgres` with `localhost` in `.env` to perform Prisma migrations
+6. Perform Prisma migrations
 
    `npm run migrate:dev`
 

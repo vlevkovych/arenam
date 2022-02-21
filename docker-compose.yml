@@ -5,13 +5,13 @@ services:
     container_name: main
     build:
       context: .
-      target: development
+      dockerfile: Dockerfile
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
       - ${APP_PORT}:${APP_PORT}
-      - 9229-9229
+      - "9229-9229"
     command: npm run start:dev
     env_file:
       - .env

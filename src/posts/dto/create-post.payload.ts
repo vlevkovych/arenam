@@ -6,8 +6,8 @@ import { Post } from '../posts.models';
 
 @ObjectType({ implements: () => [MutationPayload] })
 export class CreatePostPayload implements MutationPayload {
-    @Field(() => [UserError])
-    public errors!: UserError[];
+    @Field(() => [UserError], { nullable: true })
+    public errors?: UserError[] | undefined;
 
     @Field(() => Post, { nullable: true })
     public post?: Post;
